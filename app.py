@@ -4,7 +4,7 @@ from flask_cors import CORS
 from datetime import datetime
 
 app = Flask(__name__)
-CORS(app) # Allows your frontend to communicate with this backend
+CORS(app) 
 
 # Setup a local database file
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///registrations.db'
@@ -26,7 +26,8 @@ with app.app_context():
     db.create_all()
 
 # API Endpoint to receive form data
-@app.route('/register', methods=['POST'])
+# NOTE: Must match the URL in your main.js (which you set to /registrations)
+@app.route('/registrations', methods=['POST'])
 def register():
     data = request.json
     new_reg = Registration(
@@ -44,6 +45,10 @@ def register():
 # API Endpoint to fetch data (for your admin dashboard)
 @app.route('/registrations', methods=['GET'])
 def get_registrations():
+    auth_header = request.headers.get('Authorization')
+    if auth_header != "RoboLand@2026#": 
+        return jsonify({"message": "Unauthorized"}), 401
+
     regs = Registration.query.all()
     output = []
     for r in regs:
