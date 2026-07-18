@@ -27,23 +27,26 @@ function makeId(){
  * Serializes and commits registration payloads to storage engines
  * Programmed to fallback seamlessly to in-memory stacks upon storage API rejection
  */
-async function saveRegistration(record){
-  const id = makeId();
-  record.id = id;
-  record.registeredAt = new Date().toISOString();
-  
-  if(hasStorage){
-    try{
-      await window.storage.set(id, JSON.stringify(record), true);
-      return {ok:true, id, local:false};
-    }catch(e){
-      console.error('Registration storage failed, falling back to memory', e);
-      memoryRegistrations.push(record);
-      return {ok:true, id, local:true};
-    }
+/**
+ * Serializes and sends registration payloads to the Render backend API
+ */
+async function saveRegistration(record) {
+  try {
+    const response = await fetch('https://roboland-5xzc.onrender.com/registrations', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(record)
+    });
+
+    if (!response.ok) throw new Error('Network response was not ok');
+    
+    return { ok: true };
+  } catch (e) {
+    console.error('Registration API failed:', e);
+    return { ok: false, error: e };
   }
-  memoryRegistrations.push(record);
-  return {ok:true, id, local:true};
 }
 
 /**
@@ -306,7 +309,6 @@ form.addEventListener('submit', async function(e){
   e.preventDefault();
   if(!validate()) return;
 
-  // Freeze interface actions to protect ongoing transmission pipelines
   submitBtn.disabled = true;
   submitBtn.classList.add('loading');
 
@@ -319,20 +321,23 @@ form.addEventListener('submit', async function(e){
     interest: document.getElementById('interest').value
   };
 
+  // Wait for the API to finish
   const result = await saveRegistration(record);
 
-  // Relinquish UI freeze bindings immediately after asynchronous routines drop complete payloads
   submitBtn.disabled = false;
   submitBtn.classList.remove('loading');
 
-  // String parsing method isolating target user first names for custom greeting renders
-  const name = record.fullName.split(' ')[0];
-  successName.textContent = `Welcome to Roboland, ${name}. We'll be in touch with next steps soon.`;
-
-  formWrap.style.display = 'none';
-  successBox.classList.add('show');
-
-  refreshHeroStats();
+  if (result.ok) {
+    // Only show success if the API call was successful
+    const name = record.fullName.split(' ')[0];
+    successName.textContent = `Welcome to Roboland, ${name}. We'll be in touch soon.`;
+    formWrap.style.display = 'none';
+    successBox.classList.add('show');
+    refreshHeroStats(); 
+  } else {
+    // Show an error if the API failed
+    alert("There was an error saving your registration. Please try again.");
+  }
 });
 
 // Resets internal form inputs, clean states, and removes residual warning boundaries cleanly
