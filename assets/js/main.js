@@ -425,6 +425,7 @@ async function loadAdminData(){
       <td>${escapeHtml(r.city || '—')}</td>
       <td>${escapeHtml(INTEREST_LABELS[r.interest] || r.interest || '—')}</td>
       <td>${escapeHtml(formatTimestamp(r.registeredAt))}</td>
+      <td><button onclick="deleteRegistration(${r.id})">Delete</button></td>
     </tr>
   `).join('');
 }
