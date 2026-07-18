@@ -26,7 +26,6 @@ with app.app_context():
     db.create_all()
 
 # API Endpoint to receive form data
-# NOTE: Must match the URL in your main.js (which you set to /registrations)
 @app.route('/registrations', methods=['POST'])
 def register():
     data = request.json
@@ -53,6 +52,7 @@ def get_registrations():
     output = []
     for r in regs:
         output.append({
+            "id": r.id,  # IMPORTANT: We need the ID for the delete button
             "fullName": r.full_name,
             "age": r.age,
             "email": r.email,
@@ -63,8 +63,13 @@ def get_registrations():
         })
     return jsonify(output)
 
+# API Endpoint to delete data
 @app.route('/registrations/<int:id>', methods=['DELETE'])
 def delete_registration(id):
+    auth_header = request.headers.get('Authorization')
+    if auth_header != "RoboLand@2026#":
+        return jsonify({"message": "Unauthorized"}), 401
+    
     reg = Registration.query.get_or_404(id)
     db.session.delete(reg)
     db.session.commit()
