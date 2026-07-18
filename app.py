@@ -63,5 +63,12 @@ def get_registrations():
         })
     return jsonify(output)
 
+@app.route('/registrations/<int:id>', methods=['DELETE'])
+def delete_registration(id):
+    reg = Registration.query.get_or_404(id)
+    db.session.delete(reg)
+    db.session.commit()
+    return jsonify({"message": "Deleted"}), 200
+
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
