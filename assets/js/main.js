@@ -428,6 +428,24 @@ async function loadAdminData(){
     </tr>
   `).join('');
 }
+//Delete Data by Admin
+async function deleteRegistration(id) {
+    if (!confirm("Are you sure you want to delete this registration?")) return;
+
+    const password = prompt("Enter Admin Password to confirm deletion:");
+    
+    const response = await fetch(`https://roboland-5xzc.onrender.com/registrations/${id}`, {
+        method: 'DELETE',
+        headers: { 'Authorization': password }
+    });
+
+    if (response.status === 200) {
+        alert("Registration deleted!");
+        loadAdminData(); // Refresh the table automatically
+    } else {
+        alert("Failed to delete. Check password.");
+    }
+}
 
 /**
  * Compiles in-memory data tables into downloadable dynamic stream objects formatted to valid CSV criteria
