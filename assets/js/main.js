@@ -49,28 +49,24 @@ async function saveRegistration(record){
 /**
  * Extracts, parses, and reverse-chronologically sorts all registration records
  */
-async function fetchAllRegistrations(){
-  if(hasStorage){
-    try{
-      const listResult = await window.storage.list('reg_', true);
-      const keys = (listResult && listResult.keys) || [];
-      const records = [];
-      for(const k of keys){
-        try{
-          const r = await window.storage.get(k, true);
-          if(r && r.value) records.push(JSON.parse(r.value));
-        }catch(e){ /* Key vanished between array listing and retrieval; skip node safely */ }
-      }
-      records.sort((a,b)=> new Date(b.registeredAt) - new Date(a.registeredAt));
-      return records;
-    }catch(e){
-      console.error('Registration list failed, using in-memory copy', e);
-      return memoryRegistrations.slice().reverse();
-    }
-  }
-  return memoryRegistrations.slice().reverse();
-}
+// FetchAllRegistrations with password protection
+async function fetchAllRegistrations() {
+  // Prompt the user for the password when they open the dashboard
+  const password = prompt("Enter Admin Password:");
+  
+  if (!password) return []; // If they cancel, return empty list
 
+  const response = await fetch('https://roboland-5xzc.onrender.com/registrations', {
+    headers: { 'Authorization': password }
+  });
+
+  if (response.status === 401) {
+    alert("Unauthorized access. Access Denied.");
+    return [];
+  }
+  
+  return await response.json();
+}
 /* ----------------====================================---------------- */
 
 /* ---------------- ANNOUNCEMENT BAR ---------------- */
