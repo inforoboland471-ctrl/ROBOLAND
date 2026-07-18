@@ -1,0 +1,12 @@
+# Python / Flask
+__pycache__/
+*.pyc
+venv/
+env/
+.env
+
+# Database
+registrations.db
+
+# OS system files
+.DS_Store
