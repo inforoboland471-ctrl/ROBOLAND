@@ -2,11 +2,13 @@ import os
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
-from datetime import datetime
+from datetime import datetime, timezone
+
 
 app = Flask(__name__)
 # Enable CORS so your GitHub Pages site can talk to this backend
 CORS(app) 
+app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'a-very-random-secret-key-you-should-change')
 
 # Database configuration: Uses the secure DATABASE_URL from Render, 
 # or falls back to local sqlite for testing
@@ -23,7 +25,7 @@ class Registration(db.Model):
     phone = db.Column(db.String(20), nullable=False)
     city = db.Column(db.String(100), nullable=False)
     interest = db.Column(db.String(100), nullable=False)
-    registered_at = db.Column(db.DateTime, default=datetime.utcnow)
+    registered_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
 # Initialize DB
 with app.app_context():
