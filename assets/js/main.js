@@ -238,6 +238,34 @@ if (interestSelect) {
 }
 
 // Init stats
-function animateCount(el, target){ /* Your animateCount code */ }
-async function refreshHeroStats(){ /* Your refreshHeroStats code */ }
+function animateCount(el, target) {
+  const start = 0;
+  const duration = 900;
+  const startTime = performance.now();
+  
+  function step(now) {
+    const p = Math.min((now - startTime) / duration, 1);
+    const eased = 1 - Math.pow(1 - p, 3); // Cubic ease-out
+    el.textContent = Math.round(start + (target - start) * eased);
+    if (p < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+async function refreshHeroStats() {
+  const el = document.getElementById('statRegistered');
+  if (!el) return;
+  
+  try {
+    // This fetches from your new public /count endpoint
+    const response = await fetch('https://roboland-5xzc.onrender.com/registrations/count');
+    const data = await response.json();
+    animateCount(el, data.count);
+  } catch (e) {
+    console.error("Could not fetch stats", e);
+    el.textContent = '0';
+  }
+}
+
+// Run this on page load
 refreshHeroStats();
