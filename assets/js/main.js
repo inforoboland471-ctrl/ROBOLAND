@@ -492,6 +492,30 @@ adminOverlay.addEventListener('click', (e) => {
 adminRefresh.addEventListener('click', loadAdminData);
 adminExport.addEventListener('click', exportCsv);
 
+
+// --- Program Description Logic ---
+const interestSelect = document.getElementById('interest');
+const descBox = document.getElementById('interestDescription');
+
+const descriptions = {
+    "foundation": "Foundation Labs: Beginner-friendly robotics and coding sessions for school students, introducing circuits, sensors, and logic through guided builds.",
+    "challenges": "Build Challenges: Team-based competitions where students design, build, and program robots to solve real tasks — from obstacle courses to rescue simulations.",
+    "mentorship": "Mentor Network: Direct access to engineers and educators who guide students through projects, portfolio building, and next steps in tech careers.",
+    "school-partnership": "School Partnership: Collaborate with us to bring robotics labs and curriculum directly into your school's infrastructure."
+};
+
+if (interestSelect && descBox) {
+    interestSelect.addEventListener('change', function() {
+        const selectedValue = this.value;
+        
+        if (descriptions[selectedValue]) {
+            descBox.innerText = descriptions[selectedValue];
+            descBox.style.display = 'block'; // Makes it visible
+        } else {
+            descBox.style.display = 'none';  // Hides it if they select "Select one"
+        }
+    });
+}
 /* ----------------====================================---------------- */
 
 /* ---------------- RUN INITIALIZATION ---------------- */
