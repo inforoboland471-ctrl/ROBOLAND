@@ -1,13 +1,17 @@
+import os
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from datetime import datetime
 
 app = Flask(__name__)
+# Enable CORS so your GitHub Pages site can talk to this backend
 CORS(app) 
 
-# Setup a local database file
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///registrations.db'
+# Database configuration: Uses the secure DATABASE_URL from Render, 
+# or falls back to local sqlite for testing
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///registrations.db')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 # Database Model
@@ -24,6 +28,11 @@ class Registration(db.Model):
 # Initialize DB
 with app.app_context():
     db.create_all()
+
+# Helper function to check admin password from Environment Variables
+def is_authorized(auth_header):
+    SECRET = os.environ.get("ADMIN_PASSWORD", "RoboLand@2026#")
+    return auth_header == SECRET
 
 # API Endpoint to receive form data
 @app.route('/registrations', methods=['POST'])
@@ -44,15 +53,14 @@ def register():
 # API Endpoint to fetch data (for your admin dashboard)
 @app.route('/registrations', methods=['GET'])
 def get_registrations():
-    auth_header = request.headers.get('Authorization')
-    if auth_header != "RoboLand@2026#": 
+    if not is_authorized(request.headers.get('Authorization')):
         return jsonify({"message": "Unauthorized"}), 401
 
     regs = Registration.query.all()
     output = []
     for r in regs:
         output.append({
-            "id": r.id,  # IMPORTANT: We need the ID for the delete button
+            "id": r.id,
             "fullName": r.full_name,
             "age": r.age,
             "email": r.email,
@@ -66,8 +74,7 @@ def get_registrations():
 # API Endpoint to delete data
 @app.route('/registrations/<int:id>', methods=['DELETE'])
 def delete_registration(id):
-    auth_header = request.headers.get('Authorization')
-    if auth_header != "RoboLand@2026#":
+    if not is_authorized(request.headers.get('Authorization')):
         return jsonify({"message": "Unauthorized"}), 401
     
     reg = Registration.query.get_or_404(id)
@@ -76,4 +83,5 @@ def delete_registration(id):
     return jsonify({"message": "Deleted"}), 200
 
 if __name__ == '__main__':
+    # Use port 5000 for local, Render will override this automatically
     app.run(debug=True, port=5000)
