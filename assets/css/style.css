@@ -158,6 +158,50 @@ header.site {
 }
 .mobile-menu a:last-child { border-bottom: none; }
 
+
+
+/* ==========================================================================
+   PROJECT SECTION
+   ========================================================================== */
+  .projects__container{
+    overflow: hidden;
+  }
+
+  .projects__content{
+    display: grid;
+    justify-content: center;
+  }
+
+  .projects__img{
+   width: 250px;
+   border-radius: .75rem;
+   margin-bottom: 1.25rem;
+
+  }
+
+  .projects__subtitle{
+    font-size: .875rem;
+    color: hsl(207, 4%, 56%);
+  }
+  .projects__title{
+    font-size:  1.25rem;
+    margin-bottom: 1.25rem;
+    margin: .5rem 0 1.25rem;
+  }  
+
+  .projects__button{
+    display: inline-flex;
+    align-items: center;
+    column-gap: .5rem;
+    color: hsl(207, 4%, 16%);
+    font-size: .813rem;
+  }
+
+
+
+
+
+
 /* ==========================================================================
    HERO SECTION
    Main landing area with circuit SVG background animation.
