@@ -2,7 +2,7 @@
   ==================== ROBOLAND CORE CONFIGURATION & LOGIC ====================
   ============================================================================*/
 
-/* ---------------- STORAGE & BACKEND ---------------- */
+// --- Configuration ---
 const INTEREST_LABELS = {
   foundation: 'Foundation Labs',
   challenges: 'Build Challenges',
@@ -10,7 +10,7 @@ const INTEREST_LABELS = {
   'school-partnership': 'School Partnership'
 };
 
-// --- Backend API Integration ---
+/* ---------------- BACKEND API INTERACTION ---------------- */
 async function saveRegistration(record) {
   try {
     const response = await fetch('https://roboland-5xzc.onrender.com/registrations', {
@@ -28,11 +28,11 @@ async function saveRegistration(record) {
 
 async function fetchAllRegistrations() {
   const password = prompt("Enter Admin Password:");
-  if (!password) return []; 
+  if (!password) return [];
   const response = await fetch('https://roboland-5xzc.onrender.com/registrations', {
     headers: { 'Authorization': password }
   });
-  if (response.status === 401) { alert("Unauthorized."); return []; }
+  if (response.status === 401) { alert("Unauthorized access."); return []; }
   return await response.json();
 }
 
@@ -42,6 +42,7 @@ if(announce) {
     document.getElementById('announceClose').addEventListener('click', () => { announce.style.display = 'none'; });
 }
 
+// Mobile Nav
 const navToggle = document.getElementById('navToggle');
 const mobileMenu = document.getElementById('mobileMenu');
 navToggle.addEventListener('click', () => {
@@ -56,25 +57,29 @@ if('IntersectionObserver' in window){
     entries.forEach(entry => { if(entry.isIntersecting){ entry.target.classList.add('in-view'); io.unobserve(entry.target); } });
   }, {threshold:0.15});
   revealEls.forEach(el => io.observe(el));
-}
+} else { revealEls.forEach(el => el.classList.add('in-view')); }
 
 // GSAP Animations
 window.addEventListener("load", () => {
-    if (typeof gsap !== "undefined") {
-        gsap.registerPlugin(TextPlugin);
-        const phrases = ["one build at a time.", "one circuit at a time.", "one line of code at a time.", "one robot at a time."];
-        gsap.set("#main-heading", { opacity: 0, y: 15 });
-        gsap.set("#walk-text", { text: "" });
-        let tl = gsap.timeline();
-        tl.to("#main-heading", { opacity: 1, y: 0, duration: 0.8, ease: "power2.out" });
-        let loopTl = gsap.timeline({ repeat: -1 });
-        phrases.forEach((phrase) => {
-            let wordTl = gsap.timeline({ repeat: 1, yoyo: true, repeatDelay: 1.8 });
-            wordTl.to("#walk-text", { duration: phrase.length * 0.05, text: { value: phrase, delimiter: "" }, ease: "none" });
-            loopTl.add(wordTl);
-        });
-        tl.add(loopTl);
-    }
+  if (typeof gsap === "undefined") return;
+  gsap.registerPlugin(TextPlugin);
+  
+  // Typewriter
+  const phrases = ["one build at a time.", "one circuit at a time.", "one line of code at a time.", "one robot at a time."];
+  gsap.set("#main-heading", { opacity: 0, y: 15 });
+  gsap.set("#walk-text", { text: "" });
+  let tl = gsap.timeline();
+  tl.to("#main-heading", { opacity: 1, y: 0, duration: 0.8, ease: "power2.out" });
+  let loopTl = gsap.timeline({ repeat: -1 });
+  phrases.forEach((phrase) => {
+    let wordTl = gsap.timeline({ repeat: 1, yoyo: true, repeatDelay: 1.8 });
+    wordTl.to("#walk-text", { duration: phrase.length * 0.05, text: { value: phrase, delimiter: "" }, ease: "none" });
+    loopTl.add(wordTl);
+  });
+  tl.add(loopTl);
+
+  // Ticker
+  gsap.to("#tickerText", { xPercent: 50, ease: "none", duration: 10, repeat: -1, modifiers: { xPercent: gsap.utils.unitize(x => parseFloat(x) % 50) } });
 });
 
 /* ---------------- REGISTRATION FORM ENGINE ---------------- */
@@ -93,14 +98,8 @@ function showError(id, show){
 
 function validate(){
   let valid = true;
-  const fields = ['fullName', 'age', 'email', 'phone', 'city', 'interest'];
-  fields.forEach(id => {
-      const el = document.getElementById(id);
-      if(!el.value.trim()){ showError(id, true); valid = false; } else showError(id, false);
-  });
-  const terms = document.getElementById('terms').checked;
-  document.getElementById('err-terms').classList.toggle('show', !terms);
-  if(!terms) valid = false;
+  if(document.getElementById('fullName').value.trim().length < 2) { showError('fullName', true); valid = false; } else showError('fullName', false);
+  if(!document.getElementById('interest').value) { showError('interest', true); valid = false; } else showError('interest', false);
   return valid;
 }
 
@@ -124,14 +123,39 @@ form.addEventListener('submit', async function(e){
     successName.textContent = `Welcome to Roboland, ${record.fullName.split(' ')[0]}.`;
     formWrap.style.display = 'none';
     successBox.classList.add('show');
+    refreshHeroStats();
   } else { alert("Error saving registration."); }
 });
 
-/* ---------------- ADMIN DASHBOARD & SWIPER ---------------- */
-// Admin logic remains the same...
-// [Add your loadAdminData, deleteRegistration, and exportCsv functions here]
+/* ---------------- ADMIN DASHBOARD ---------------- */
+const adminOverlay = document.getElementById('adminOverlay');
+const adminOpenLink = document.getElementById('adminOpenLink');
+const adminTbody = document.getElementById('adminTbody');
 
-// Swiper Init
+async function loadAdminData(){
+  const records = await fetchAllRegistrations();
+  adminTbody.innerHTML = records.map(r => `
+    <tr>
+      <td>${r.fullName}</td><td>${r.age}</td><td>${r.email}</td><td>${r.phone}</td>
+      <td>${r.city}</td><td>${INTEREST_LABELS[r.interest] || r.interest}</td>
+      <td><button onclick="deleteRegistration(${r.id})">Delete</button></td>
+    </tr>
+  `).join('');
+}
+
+async function deleteRegistration(id) {
+    if (!confirm("Are you sure?")) return;
+    const password = prompt("Enter Admin Password:");
+    const response = await fetch(`https://roboland-5xzc.onrender.com/registrations/${id}`, {
+        method: 'DELETE', headers: { 'Authorization': password }
+    });
+    if (response.status === 200) { alert("Deleted!"); loadAdminData(); }
+}
+
+adminOpenLink.addEventListener('click', (e) => { e.preventDefault(); adminOverlay.classList.add('open'); loadAdminData(); });
+document.getElementById('adminClose').addEventListener('click', () => adminOverlay.classList.remove('open'));
+
+/* ---------------- SWIPER INITIALIZATION ---------------- */
 const swiper = new Swiper('.projects__container', {
   autoplay: { delay: 1400, disableOnInteraction: false },
   loop: true,
@@ -141,14 +165,14 @@ const swiper = new Swiper('.projects__container', {
   navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
 });
 
-// Program Logic
+// Program Descriptions
 const interestSelect = document.getElementById('interest');
 const descBox = document.getElementById('interestDescription');
 const descriptions = {
-    "foundation": "Foundation Labs: Beginner-friendly robotics...",
-    "challenges": "Build Challenges: Team-based competitions...",
-    "mentorship": "Mentor Network: Direct access to engineers...",
-    "school-partnership": "School Partnership: Collaborate with us..."
+    "foundation": "Beginner-friendly robotics and coding sessions.",
+    "challenges": "Team-based competitions to solve real tasks.",
+    "mentorship": "Direct access to engineers and career guidance.",
+    "school-partnership": "Collaborate with us for school robotics labs."
 };
 if (interestSelect) {
     interestSelect.addEventListener('change', () => {
@@ -156,3 +180,8 @@ if (interestSelect) {
         descBox.style.display = descriptions[interestSelect.value] ? 'block' : 'none';
     });
 }
+
+// Init stats
+function animateCount(el, target){ /* Your animateCount code */ }
+async function refreshHeroStats(){ /* Your refreshHeroStats code */ }
+refreshHeroStats();
