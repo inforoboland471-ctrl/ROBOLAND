@@ -84,6 +84,12 @@ def delete_registration(id):
     db.session.commit()
     return jsonify({"message": "Deleted"}), 200
 
+# Public endpoint for the registration counter
+@app.route('/registrations/count', methods=['GET'])
+def get_count():
+    count = Registration.query.count()
+    return jsonify({"count": count})
+
 if __name__ == '__main__':
     # Use port 5000 for local, Render will override this automatically
     app.run(debug=True, port=5000)
