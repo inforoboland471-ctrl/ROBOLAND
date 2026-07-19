@@ -130,31 +130,87 @@ form.addEventListener('submit', async function(e){
 /* ---------------- ADMIN DASHBOARD ---------------- */
 const adminOverlay = document.getElementById('adminOverlay');
 const adminOpenLink = document.getElementById('adminOpenLink');
+const adminClose = document.getElementById('adminClose');
 const adminTbody = document.getElementById('adminTbody');
+const adminEmpty = document.getElementById('adminEmpty');
+const adminTotal = document.getElementById('adminTotal');
+const adminCities = document.getElementById('adminCities');
+const adminTopInterest = document.getElementById('adminTopInterest');
+
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g, ch => ({
+    '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
+  }[ch]));
+}
+
+function formatTimestamp(iso){
+  try{
+    const d = new Date(iso);
+    return d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+  }catch(e){ return iso || '—'; }
+}
 
 async function loadAdminData(){
+  adminTbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Loading...</td></tr>';
+  
   const records = await fetchAllRegistrations();
+  
+  // 1. Update the Total Registrations
+  adminTotal.textContent = records.length;
+  
+  // 2. Update the Unique Cities count
+  const cities = new Set(records.map(r => (r.city || '').trim().toLowerCase()).filter(Boolean));
+  adminCities.textContent = cities.size;
+
+  // 3. Calculate the Top Interest Area
+  const counts = {};
+  records.forEach(r => { if(r.interest) counts[r.interest] = (counts[r.interest]||0)+1; });
+  let topKey = null, topVal = 0;
+  Object.keys(counts).forEach(k => { if(counts[k] > topVal){ topVal = counts[k]; topKey = k; } });
+  adminTopInterest.textContent = topKey ? (INTEREST_LABELS[topKey] || topKey) : '—';
+
+  // 4. Render the Table or Empty State
+  if(records.length === 0){
+    adminTbody.innerHTML = '';
+    if(adminEmpty) adminEmpty.style.display = 'block';
+    return;
+  }
+  if(adminEmpty) adminEmpty.style.display = 'none';
+
   adminTbody.innerHTML = records.map(r => `
     <tr>
-      <td>${r.fullName}</td><td>${r.age}</td><td>${r.email}</td><td>${r.phone}</td>
-      <td>${r.city}</td><td>${INTEREST_LABELS[r.interest] || r.interest}</td>
-      <td><button onclick="deleteRegistration(${r.id})">Delete</button></td>
+      <td>${escapeHtml(r.fullName || '—')}</td>
+      <td>${escapeHtml(r.age || '—')}</td>
+      <td>${escapeHtml(r.email || '—')}</td>
+      <td>${escapeHtml(r.phone || '—')}</td>
+      <td>${escapeHtml(r.city || '—')}</td>
+      <td>${escapeHtml(INTEREST_LABELS[r.interest] || r.interest || '—')}</td>
+      <td>${escapeHtml(formatTimestamp(r.registeredAt))}</td>
+      <td><button class="admin-btn" style="padding: 4px 8px;" onclick="deleteRegistration(${r.id})">Delete</button></td>
     </tr>
   `).join('');
 }
 
 async function deleteRegistration(id) {
-    if (!confirm("Are you sure?")) return;
+    if (!confirm("Are you sure you want to delete this registration?")) return;
     const password = prompt("Enter Admin Password:");
     const response = await fetch(`https://roboland-5xzc.onrender.com/registrations/${id}`, {
         method: 'DELETE', headers: { 'Authorization': password }
     });
-    if (response.status === 200) { alert("Deleted!"); loadAdminData(); }
+    if (response.status === 200) { 
+        alert("Deleted successfully!"); 
+        loadAdminData(); 
+    } else {
+        alert("Failed to delete. Incorrect password.");
+    }
 }
 
-adminOpenLink.addEventListener('click', (e) => { e.preventDefault(); adminOverlay.classList.add('open'); loadAdminData(); });
-document.getElementById('adminClose').addEventListener('click', () => adminOverlay.classList.remove('open'));
-
+adminOpenLink.addEventListener('click', (e) => { 
+    e.preventDefault(); 
+    adminOverlay.classList.add('open'); 
+    loadAdminData(); 
+});
+adminClose.addEventListener('click', () => adminOverlay.classList.remove('open'));
 /* ---------------- SWIPER INITIALIZATION ---------------- */
 const swiper = new Swiper('.projects__container', {
   autoplay: { delay: 1400, disableOnInteraction: false },
