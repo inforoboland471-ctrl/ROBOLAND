@@ -16,7 +16,7 @@
   <!--==================== GOOGLE FONTS ====================-->
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
-  <!--=============== CSS (Fixed Paths to lowercase 'css') ===============-->
+  <!--=============== CSS ===============-->
   <link rel="stylesheet" href="assets/css/style.css">
   <link rel="stylesheet" href="assets/css/swiper-bundle.min.css">
 </head>
@@ -58,7 +58,8 @@
         </button>
       </div>
     </nav>
-    <--Mobile Menu Section-->
+    
+    <!-- Mobile Menu Section -->
     <div class="mobile-menu" id="mobileMenu">
       <a href="#mission">Mission</a>
       <a href="#programs">Programs</a>
@@ -459,70 +460,66 @@
     </div>
   </div>
 
-  <!--==================== SCRIPTS (Loaded in correct order) ====================-->
-  <!-- Core Libraries -->
+  <!--==================== LOGIN MODAL ====================-->
+  <div class="admin-overlay" id="loginOverlay">
+    <div class="admin-panel" style="max-width: 420px; text-align: center;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 style="margin: 0;">Member Portal Login</h3>
+        <button class="admin-btn close-btn" id="loginClose">Close</button>
+      </div>
+      <p style="font-size: 0.9rem; color: #5b6070; margin-bottom: 20px;">Enter your registered email to unlock your course access.</p>
+      
+      <div id="loginFormWrap">
+        <div class="field" style="text-align: left;">
+          <label for="loginEmail">Registered Email <span class="req">*</span></label>
+          <input type="email" id="loginEmail" placeholder="you@example.com" style="width: 100%; padding: 12px; border-radius: 8px; border: 1.5px solid #D9D3C3;">
+        </div>
+        <div class="error-msg" id="err-login" style="margin-bottom: 15px;"></div>
+        <button class="submit-btn" id="loginSubmitBtn" onclick="handleMemberLogin()">
+          <span class="btn-label">Access Courses</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!--==================== COURSE ACCESS DASHBOARD ====================-->
+  <section id="courseDashboard" style="display: none; background: var(--paper-dim); padding: 80px 24px; min-height: 80vh;">
+    <div class="wrap">
+      <div class="section-head reveal in-view">
+        <span class="eyebrow">Student Portal</span>
+        <h2 id="userGreeting">Welcome back!</h2>
+        <p>You have full access to all Roboland labs, kits documentation, and beginner-to-advanced engineering modules.</p>
+        <button class="btn-ghost" style="margin-top: 15px; color: var(--text-dark); border-color: var(--text-dark);" onclick="handleLogout()">Log out</button>
+      </div>
+
+      <div class="card-grid" style="margin-top: 30px;">
+        <div class="prog-card reveal in-view">
+          <div class="prog-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 12h16M12 4v16" stroke="#3ED6C4" stroke-width="2" stroke-linecap="round"/></svg></div>
+          <h3>Module 1: Circuit Basics</h3>
+          <p>Learn breadboards, resistors, LEDs, and power distribution for beginner builds.</p>
+          <a href="#" class="projects__button" style="display:inline-block; margin-top:15px; color:var(--cyan-dim); font-weight:600;">Start Learning <i class="ri-arrow-right-up-line"></i></a>
+        </div>
+        <div class="prog-card reveal in-view">
+          <div class="prog-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 3l8 4-8 4-8-4 8-4zM4 15l8 4 8-4" stroke="#F4A300" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <h3>Module 2: Arduino & Microcontrollers</h3>
+          <p>Write your first C++ scripts to control sensors, motors, and automated logic paths.</p>
+          <a href="#" class="projects__button" style="display:inline-block; margin-top:15px; color:var(--cyan-dim); font-weight:600;">Start Learning <i class="ri-arrow-right-up-line"></i></a>
+        </div>
+        <div class="prog-card reveal in-view">
+          <div class="prog-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="3.5" stroke="#3ED6C4" stroke-width="2"/><path d="M5 20c1.5-4 4.5-6 7-6s5.5 2 7 6" stroke="#3ED6C4" stroke-width="2" stroke-linecap="round"/></svg></div>
+          <h3>Module 3: Advanced Robotics & AI</h3>
+          <p>Integrate computer vision, obstacle avoidance algorithms, and wireless modules.</p>
+          <a href="#" class="projects__button" style="display:inline-block; margin-top:15px; color:var(--cyan-dim); font-weight:600;">Start Learning <i class="ri-arrow-right-up-line"></i></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!--==================== SCRIPTS ====================-->
   <script src="assets/js/scrolleveal.min.js"></script>
   <script src="assets/js/swiper-bundle.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/TextPlugin.min.js"></script>
-  
-  <!-- Custom Logic (MUST load after libraries) -->
   <script src="assets/js/main.js"></script>
-
-
-  <!--==================== LOGIN MODAL ====================-->
-<div class="admin-overlay" id="loginOverlay">
-  <div class="admin-panel" style="max-width: 420px; text-align: center;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-      <h3 style="margin: 0;">Member Portal Login</h3>
-      <button class="admin-btn close-btn" id="loginClose">Close</button>
-    </div>
-    <p style="font-size: 0.9rem; color: #5b6070; margin-bottom: 20px;">Enter your registered email to unlock your course access.</p>
-    
-    <div id="loginFormWrap">
-      <div class="field" style="text-align: left;">
-        <label for="loginEmail">Registered Email <span class="req">*</span></label>
-        <input type="email" id="loginEmail" placeholder="you@example.com" style="width: 100%; padding: 12px; border-radius: 8px; border: 1.5px solid #D9D3C3;">
-      </div>
-      <div class="error-msg" id="err-login" style="margin-bottom: 15px;"></div>
-      <button class="submit-btn" id="loginSubmitBtn" onclick="handleMemberLogin()">
-        <span class="btn-label">Access Courses</span>
-      </button>
-    </div>
-  </div>
-</div>
-
-<!--==================== COURSE ACCESS DASHBOARD (Appears after login) ====================-->
-<section id="courseDashboard" style="display: none; background: var(--paper-dim); padding: 80px 24px; min-height: 80vh;">
-  <div class="wrap">
-    <div class="section-head reveal in-view">
-      <span class="eyebrow">Student Portal</span>
-      <h2 id="userGreeting">Welcome back!</h2>
-      <p>You have full access to all Roboland labs, kits documentation, and beginner-to-advanced engineering modules.</p>
-      <button class="btn-ghost" style="margin-top: 15px; color: var(--text-dark); border-color: var(--text-dark);" onclick="handleLogout()">Log out</button>
-    </div>
-
-    <div class="card-grid" style="margin-top: 30px;">
-      <div class="prog-card reveal in-view">
-        <div class="prog-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 12h16M12 4v16" stroke="#3ED6C4" stroke-width="2" stroke-linecap="round"/></svg></div>
-        <h3>Module 1: Circuit Basics</h3>
-        <p>Learn breadboards, resistors, LEDs, and power distribution for beginner builds.</p>
-        <a href="#" class="projects__button" style="display:inline-block; margin-top:15px; color:var(--cyan-dim); font-weight:600;">Start Learning <i class="ri-arrow-right-up-line"></i></a>
-      </div>
-      <div class="prog-card reveal in-view">
-        <div class="prog-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 3l8 4-8 4-8-4 8-4zM4 15l8 4 8-4" stroke="#F4A300" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-        <h3>Module 2: Arduino & Microcontrollers</h3>
-        <p>Write your first C++ scripts to control sensors, motors, and automated logic paths.</p>
-        <a href="#" class="projects__button" style="display:inline-block; margin-top:15px; color:var(--cyan-dim); font-weight:600;">Start Learning <i class="ri-arrow-right-up-line"></i></a>
-      </div>
-      <div class="prog-card reveal in-view">
-        <div class="prog-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="3.5" stroke="#3ED6C4" stroke-width="2"/><path d="M5 20c1.5-4 4.5-6 7-6s5.5 2 7 6" stroke="#3ED6C4" stroke-width="2" stroke-linecap="round"/></svg></div>
-        <h3>Module 3: Advanced Robotics & AI</h3>
-        <p>Integrate computer vision, obstacle avoidance algorithms, and wireless modules.</p>
-        <a href="#" class="projects__button" style="display:inline-block; margin-top:15px; color:var(--cyan-dim); font-weight:600;">Start Learning <i class="ri-arrow-right-up-line"></i></a>
-      </div>
-    </div>
-  </div>
-</section>
 </body>
 </html>
