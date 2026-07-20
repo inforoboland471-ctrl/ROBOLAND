@@ -1229,3 +1229,8 @@ table.admin-table tr:last-child td { border-bottom: none; }
   cursor: pointer;
 
 }
+
+/* Ensure Login Overlay is visible when opened */
+.admin-overlay.open {
+    display: block !important;
+}
