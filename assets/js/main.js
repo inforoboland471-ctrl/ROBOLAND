@@ -284,6 +284,7 @@ if (navLoginLink) {
     });
 }
 
+// Safely attach mobile listener only if the element actually exists
 if (mobileLoginLink) {
     mobileLoginLink.addEventListener('click', (e) => {
         e.preventDefault();
