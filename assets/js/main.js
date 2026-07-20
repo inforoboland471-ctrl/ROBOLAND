@@ -272,6 +272,7 @@ const loginOverlay = document.getElementById('loginOverlay');
 const navLoginLink = document.getElementById('navLoginLink');
 const mobileLoginLink = document.getElementById('mobileLoginLink');
 const loginClose = document.getElementById('loginClose');
+const mobileMenu = document.getElementById('mobileMenu'); // Added reference
 const courseDashboard = document.getElementById('courseDashboard');
 const userGreeting = document.getElementById('userGreeting');
 
@@ -279,21 +280,24 @@ const userGreeting = document.getElementById('userGreeting');
 if (navLoginLink) {
     navLoginLink.addEventListener('click', (e) => {
         e.preventDefault();
-        loginOverlay.classList.add('open');
+        if (loginOverlay) loginOverlay.classList.add('open');
     });
 }
+
 if (mobileLoginLink) {
     mobileLoginLink.addEventListener('click', (e) => {
         e.preventDefault();
-        loginOverlay.classList.add('open');
-        if(mobileMenu) mobileMenu.classList.remove('open');
+        if (loginOverlay) loginOverlay.classList.add('open');
+        if (mobileMenu) mobileMenu.classList.remove('open');
     });
 }
+
 if (loginClose) {
     loginClose.addEventListener('click', () => {
-        loginOverlay.classList.remove('open');
+        if (loginOverlay) loginOverlay.classList.remove('open');
     });
 }
+
 if (loginOverlay) {
     loginOverlay.addEventListener('click', (e) => {
         if (e.target === loginOverlay) loginOverlay.classList.remove('open');
@@ -304,14 +308,18 @@ if (loginOverlay) {
 async function handleMemberLogin() {
     const emailInput = document.getElementById('loginEmail');
     const errDiv = document.getElementById('err-login');
+    if (!emailInput) return;
+    
     const email = emailInput.value.trim();
 
     if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-        errDiv.textContent = "Please enter a valid email address.";
-        errDiv.classList.add('show');
+        if (errDiv) {
+            errDiv.textContent = "Please enter a valid email address.";
+            errDiv.classList.add('show');
+        }
         return;
     }
-    errDiv.classList.remove('show');
+    if (errDiv) errDiv.classList.remove('show');
 
     try {
         const response = await fetch('https://roboland-5xzc.onrender.com/login', {
@@ -324,16 +332,20 @@ async function handleMemberLogin() {
 
         if (response.ok && data.success) {
             sessionStorage.setItem('roboland_user', data.fullName);
-            loginOverlay.classList.remove('open');
+            if (loginOverlay) loginOverlay.classList.remove('open');
             showCourseDashboard(data.fullName);
         } else {
-            errDiv.textContent = data.message || "Email not registered.";
-            errDiv.classList.add('show');
+            if (errDiv) {
+                errDiv.textContent = data.message || "Email not registered.";
+                errDiv.classList.add('show');
+            }
         }
     } catch (e) {
         console.error("Login request error:", e);
-        errDiv.textContent = "Connection failed. Please try again.";
-        errDiv.classList.add('show');
+        if (errDiv) {
+            errDiv.textContent = "Connection failed. Please try again.";
+            errDiv.classList.add('show');
+        }
     }
 }
 
