@@ -267,5 +267,93 @@ async function refreshHeroStats() {
   }
 }
 
+
+/* ---------------- MEMBER LOGIN & COURSE ACCESS ENGINE ---------------- */
+const loginOverlay = document.getElementById('loginOverlay');
+const navLoginLink = document.getElementById('navLoginLink');
+const loginClose = document.getElementById('loginClose');
+const courseDashboard = document.getElementById('courseDashboard');
+const userGreeting = document.getElementById('userGreeting');
+
+// Open/Close Login Modal triggers
+if (navLoginLink) {
+    navLoginLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        loginOverlay.classList.add('open');
+    });
+}
+if (loginClose) {
+    loginClose.addEventListener('click', () => {
+        loginOverlay.classList.remove('open');
+    });
+}
+if (loginOverlay) {
+    loginOverlay.addEventListener('click', (e) => {
+        if (e.target === loginOverlay) loginOverlay.classList.remove('open');
+    });
+}
+
+// Handle User Authentication Submission
+async function handleMemberLogin() {
+    const emailInput = document.getElementById('loginEmail');
+    const errDiv = document.getElementById('err-login');
+    const email = emailInput.value.trim();
+
+    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+        errDiv.textContent = "Please enter a valid email address.";
+        errDiv.classList.add('show');
+        return;
+    }
+    errDiv.classList.remove('show');
+
+    try {
+        const response = await fetch('https://roboland-5xzc.onrender.com/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: email })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+            // Save state in browser session storage
+            sessionStorage.setItem('roboland_user', data.fullName);
+            
+            // Close modal and show course section
+            loginOverlay.classList.remove('open');
+            showCourseDashboard(data.fullName);
+        } else {
+            errDiv.textContent = data.message || "Email not registered.";
+            errDiv.classList.add('show');
+        }
+    } catch (e) {
+        console.error("Login request error:", e);
+        errDiv.textContent = "Connection failed. Please try again.";
+        errDiv.classList.add('show');
+    }
+}
+
+function showCourseDashboard(name) {
+    if (userGreeting) userGreeting.textContent = `Welcome back, ${name}!`;
+    if (courseDashboard) {
+        courseDashboard.style.display = 'block';
+        courseDashboard.scrollIntoView({ behavior: 'smooth' });
+    }
+}
+
+function handleLogout() {
+    sessionStorage.removeItem('roboland_user');
+    if (courseDashboard) courseDashboard.style.display = 'none';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Auto-login check on page reload if session exists
+window.addEventListener('DOMContentLoaded', () => {
+    const savedUser = sessionStorage.getItem('roboland_user');
+    if (savedUser) {
+        showCourseDashboard(savedUser);
+    }
+});
+
 // Run this on page load
 refreshHeroStats();
