@@ -90,6 +90,27 @@ def get_count():
     count = Registration.query.count()
     return jsonify({"count": count})
 
+# API Endpoint for User Login / Course Access
+@app.route('/login', methods=['POST'])
+def login():
+    data = request.json
+    email = data.get('email', '').strip().lower()
+    
+    # Search for user by email (case-insensitive search)
+    user = Registration.query.filter(db.func.lower(Registration.email) == email).first()
+    
+    if user:
+        return jsonify({
+            "success": True,
+            "fullName": user.full_name,
+            "message": "Login successful!"
+        }), 200
+    else:
+        return jsonify({
+            "success": False,
+            "message": "Email not found. Please register first."
+        }), 404
+
 if __name__ == '__main__':
     # Use port 5000 for local, Render will override this automatically
     app.run(debug=True, port=5000)
