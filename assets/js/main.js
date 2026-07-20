@@ -29,26 +29,36 @@ async function saveRegistration(record) {
 async function fetchAllRegistrations() {
   const password = prompt("Enter Admin Password:");
   if (!password) return [];
-  const response = await fetch('https://roboland-5xzc.onrender.com/registrations', {
-    headers: { 'Authorization': password }
-  });
-  if (response.status === 401) { alert("Unauthorized access."); return []; }
-  return await response.json();
+  try {
+    const response = await fetch('https://roboland-5xzc.onrender.com/registrations', {
+      headers: { 'Authorization': password }
+    });
+    if (response.status === 401) { alert("Unauthorized access."); return []; }
+    return await response.json();
+  } catch (e) {
+    console.error('Fetch registrations failed:', e);
+    return [];
+  }
 }
 
 /* ---------------- UI & ANIMATIONS ---------------- */
 const announce = document.getElementById('announce');
 if(announce) {
-    document.getElementById('announceClose').addEventListener('click', () => { announce.style.display = 'none'; });
+    const announceClose = document.getElementById('announceClose');
+    if(announceClose) {
+        announceClose.addEventListener('click', () => { announce.style.display = 'none'; });
+    }
 }
 
-// Mobile Nav
+// Mobile Nav Toggle
 const navToggle = document.getElementById('navToggle');
 const mobileMenu = document.getElementById('mobileMenu');
-navToggle.addEventListener('click', () => {
-  const open = mobileMenu.classList.toggle('open');
-  navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-});
+if (navToggle && mobileMenu) {
+    navToggle.addEventListener('click', () => {
+        const open = mobileMenu.classList.toggle('open');
+        navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+    });
+}
 
 // Scroll Reveal
 const revealEls = document.querySelectorAll('.reveal');
@@ -62,24 +72,32 @@ if('IntersectionObserver' in window){
 // GSAP Animations
 window.addEventListener("load", () => {
   if (typeof gsap === "undefined") return;
-  gsap.registerPlugin(TextPlugin);
+  if (typeof TextPlugin !== "undefined") gsap.registerPlugin(TextPlugin);
   
   // Typewriter
   const phrases = ["one build at a time.", "one circuit at a time.", "one line of code at a time.", "one robot at a time."];
-  gsap.set("#main-heading", { opacity: 0, y: 15 });
-  gsap.set("#walk-text", { text: "" });
-  let tl = gsap.timeline();
-  tl.to("#main-heading", { opacity: 1, y: 0, duration: 0.8, ease: "power2.out" });
-  let loopTl = gsap.timeline({ repeat: -1 });
-  phrases.forEach((phrase) => {
-    let wordTl = gsap.timeline({ repeat: 1, yoyo: true, repeatDelay: 1.8 });
-    wordTl.to("#walk-text", { duration: phrase.length * 0.05, text: { value: phrase, delimiter: "" }, ease: "none" });
-    loopTl.add(wordTl);
-  });
-  tl.add(loopTl);
+  const mainHeading = document.getElementById("main-heading");
+  const walkText = document.getElementById("walk-text");
+  
+  if (mainHeading) gsap.set(mainHeading, { opacity: 0, y: 15 });
+  if (walkText) {
+      gsap.set(walkText, { text: "" });
+      let tl = gsap.timeline();
+      if (mainHeading) tl.to(mainHeading, { opacity: 1, y: 0, duration: 0.8, ease: "power2.out" });
+      let loopTl = gsap.timeline({ repeat: -1 });
+      phrases.forEach((phrase) => {
+        let wordTl = gsap.timeline({ repeat: 1, yoyo: true, repeatDelay: 1.8 });
+        wordTl.to(walkText, { duration: phrase.length * 0.05, text: { value: phrase, delimiter: "" }, ease: "none" });
+        loopTl.add(wordTl);
+      });
+      tl.add(loopTl);
+  }
 
   // Ticker
-  gsap.to("#tickerText", { xPercent: 50, ease: "none", duration: 10, repeat: -1, modifiers: { xPercent: gsap.utils.unitize(x => parseFloat(x) % 50) } });
+  const tickerText = document.getElementById("tickerText");
+  if (tickerText) {
+      gsap.to(tickerText, { xPercent: 50, ease: "none", duration: 10, repeat: -1, modifiers: { xPercent: gsap.utils.unitize(x => parseFloat(x) % 50) } });
+  }
 });
 
 /* ---------------- REGISTRATION FORM ENGINE ---------------- */
@@ -98,34 +116,43 @@ function showError(id, show){
 
 function validate(){
   let valid = true;
-  if(document.getElementById('fullName').value.trim().length < 2) { showError('fullName', true); valid = false; } else showError('fullName', false);
-  if(!document.getElementById('interest').value) { showError('interest', true); valid = false; } else showError('interest', false);
+  const fullNameEl = document.getElementById('fullName');
+  const interestEl = document.getElementById('interest');
+  
+  if(fullNameEl && fullNameEl.value.trim().length < 2) { showError('fullName', true); valid = false; } else { showError('fullName', false); }
+  if(interestEl && !interestEl.value) { showError('interest', true); valid = false; } else { showError('interest', false); }
   return valid;
 }
 
-form.addEventListener('submit', async function(e){
-  e.preventDefault();
-  if(!validate()) return;
-  submitBtn.disabled = true;
-  submitBtn.classList.add('loading');
-  const record = {
-    fullName: document.getElementById('fullName').value.trim(),
-    age: document.getElementById('age').value,
-    email: document.getElementById('email').value.trim(),
-    phone: document.getElementById('phone').value.trim(),
-    city: document.getElementById('city').value.trim(),
-    interest: document.getElementById('interest').value
-  };
-  const result = await saveRegistration(record);
-  submitBtn.disabled = false;
-  submitBtn.classList.remove('loading');
-  if (result.ok) {
-    successName.textContent = `Welcome to Roboland, ${record.fullName.split(' ')[0]}.`;
-    formWrap.style.display = 'none';
-    successBox.classList.add('show');
-    refreshHeroStats();
-  } else { alert("Error saving registration."); }
-});
+if (form) {
+    form.addEventListener('submit', async function(e){
+      e.preventDefault();
+      if(!validate()) return;
+      if(submitBtn) {
+          submitBtn.disabled = true;
+          submitBtn.classList.add('loading');
+      }
+      const record = {
+        fullName: document.getElementById('fullName').value.trim(),
+        age: document.getElementById('age').value,
+        email: document.getElementById('email').value.trim(),
+        phone: document.getElementById('phone').value.trim(),
+        city: document.getElementById('city').value.trim(),
+        interest: document.getElementById('interest').value
+      };
+      const result = await saveRegistration(record);
+      if(submitBtn) {
+          submitBtn.disabled = false;
+          submitBtn.classList.remove('loading');
+      }
+      if (result.ok) {
+        if(successName) successName.textContent = `Welcome to Roboland, ${record.fullName.split(' ')[0]}.`;
+        if(formWrap) formWrap.style.display = 'none';
+        if(successBox) successBox.classList.add('show');
+        refreshHeroStats();
+      } else { alert("Error saving registration."); }
+    });
+}
 
 /* ---------------- ADMIN DASHBOARD ---------------- */
 const adminOverlay = document.getElementById('adminOverlay');
@@ -151,76 +178,85 @@ function formatTimestamp(iso){
 }
 
 async function loadAdminData(){
-  adminTbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Loading...</td></tr>';
+  if(adminTbody) adminTbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Loading...</td></tr>';
   
   const records = await fetchAllRegistrations();
   
-  // 1. Update the Total Registrations
-  adminTotal.textContent = records.length;
+  if(adminTotal) adminTotal.textContent = records.length;
   
-  // 2. Update the Unique Cities count
   const cities = new Set(records.map(r => (r.city || '').trim().toLowerCase()).filter(Boolean));
-  adminCities.textContent = cities.size;
+  if(adminCities) adminCities.textContent = cities.size;
 
-  // 3. Calculate the Top Interest Area
   const counts = {};
   records.forEach(r => { if(r.interest) counts[r.interest] = (counts[r.interest]||0)+1; });
   let topKey = null, topVal = 0;
   Object.keys(counts).forEach(k => { if(counts[k] > topVal){ topVal = counts[k]; topKey = k; } });
-  adminTopInterest.textContent = topKey ? (INTEREST_LABELS[topKey] || topKey) : '—';
+  if(adminTopInterest) adminTopInterest.textContent = topKey ? (INTEREST_LABELS[topKey] || topKey) : '—';
 
-  // 4. Render the Table or Empty State
   if(records.length === 0){
-    adminTbody.innerHTML = '';
+    if(adminTbody) adminTbody.innerHTML = '';
     if(adminEmpty) adminEmpty.style.display = 'block';
     return;
   }
   if(adminEmpty) adminEmpty.style.display = 'none';
 
-  adminTbody.innerHTML = records.map(r => `
-    <tr>
-      <td>${escapeHtml(r.fullName || '—')}</td>
-      <td>${escapeHtml(r.age || '—')}</td>
-      <td>${escapeHtml(r.email || '—')}</td>
-      <td>${escapeHtml(r.phone || '—')}</td>
-      <td>${escapeHtml(r.city || '—')}</td>
-      <td>${escapeHtml(INTEREST_LABELS[r.interest] || r.interest || '—')}</td>
-      <td>${escapeHtml(formatTimestamp(r.registeredAt))}</td>
-      <td><button class="admin-btn" style="padding: 4px 8px;" onclick="deleteRegistration(${r.id})">Delete</button></td>
-    </tr>
-  `).join('');
+  if(adminTbody) {
+      adminTbody.innerHTML = records.map(r => `
+        <tr>
+          <td>${escapeHtml(r.fullName || '—')}</td>
+          <td>${escapeHtml(r.age || '—')}</td>
+          <td>${escapeHtml(r.email || '—')}</td>
+          <td>${escapeHtml(r.phone || '—')}</td>
+          <td>${escapeHtml(r.city || '—')}</td>
+          <td>${escapeHtml(INTEREST_LABELS[r.interest] || r.interest || '—')}</td>
+          <td>${escapeHtml(formatTimestamp(r.registeredAt))}</td>
+          <td><button class="admin-btn" style="padding: 4px 8px;" onclick="deleteRegistration(${r.id})">Delete</button></td>
+        </tr>
+      `).join('');
+  }
 }
 
 async function deleteRegistration(id) {
     if (!confirm("Are you sure you want to delete this registration?")) return;
     const password = prompt("Enter Admin Password:");
-    const response = await fetch(`https://roboland-5xzc.onrender.com/registrations/${id}`, {
-        method: 'DELETE', headers: { 'Authorization': password }
-    });
-    if (response.status === 200) { 
-        alert("Deleted successfully!"); 
-        loadAdminData(); 
-    } else {
-        alert("Failed to delete. Incorrect password.");
+    if (!password) return;
+    try {
+        const response = await fetch(`https://roboland-5xzc.onrender.com/registrations/${id}`, {
+            method: 'DELETE', headers: { 'Authorization': password }
+        });
+        if (response.status === 200) { 
+            alert("Deleted successfully!"); 
+            loadAdminData(); 
+        } else {
+            alert("Failed to delete. Incorrect password.");
+        }
+    } catch(e) {
+        alert("Deletion network error.");
     }
 }
 
-adminOpenLink.addEventListener('click', (e) => { 
-    e.preventDefault(); 
-    adminOverlay.classList.add('open'); 
-    loadAdminData(); 
-});
-adminClose.addEventListener('click', () => adminOverlay.classList.remove('open'));
+if (adminOpenLink) {
+    adminOpenLink.addEventListener('click', (e) => { 
+        e.preventDefault(); 
+        if(adminOverlay) adminOverlay.classList.add('open'); 
+        loadAdminData(); 
+    });
+}
+if (adminClose && adminOverlay) {
+    adminClose.addEventListener('click', () => adminOverlay.classList.remove('open'));
+}
 
 /* ---------------- SWIPER INITIALIZATION ---------------- */
-const swiper = new Swiper('.projects__container', {
-  autoplay: { delay: 1400, disableOnInteraction: false },
-  loop: true,
-  spaceBetween: 24,
-  breakpoints: { 576: { slidesPerView: 2 }, 768: { slidesPerView: 3 } },
-  pagination: { el: '.swiper-pagination', clickable: true },
-  navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
-});
+if (typeof Swiper !== 'undefined') {
+    new Swiper('.projects__container', {
+      autoplay: { delay: 1400, disableOnInteraction: false },
+      loop: true,
+      spaceBetween: 24,
+      breakpoints: { 576: { slidesPerView: 2 }, 768: { slidesPerView: 3 } },
+      pagination: { el: '.swiper-pagination', clickable: true },
+      navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
+    });
+}
 
 // Program Descriptions
 const interestSelect = document.getElementById('interest');
@@ -231,14 +267,14 @@ const descriptions = {
     "mentorship": "Direct access to engineers and career guidance.",
     "school-partnership": "Collaborate with us for school robotics labs."
 };
-if (interestSelect) {
+if (interestSelect && descBox) {
     interestSelect.addEventListener('change', () => {
         descBox.innerText = descriptions[interestSelect.value] || "";
         descBox.style.display = descriptions[interestSelect.value] ? 'block' : 'none';
     });
 }
 
-// Init stats
+// Init stats counter
 function animateCount(el, target) {
   const start = 0;
   const duration = 900;
@@ -246,7 +282,7 @@ function animateCount(el, target) {
   
   function step(now) {
     const p = Math.min((now - startTime) / duration, 1);
-    const eased = 1 - Math.pow(1 - p, 3); // Cubic ease-out
+    const eased = 1 - Math.pow(1 - p, 3);
     el.textContent = Math.round(start + (target - start) * eased);
     if (p < 1) requestAnimationFrame(step);
   }
@@ -272,11 +308,9 @@ const loginOverlay = document.getElementById('loginOverlay');
 const navLoginLink = document.getElementById('navLoginLink');
 const mobileLoginLink = document.getElementById('mobileLoginLink');
 const loginClose = document.getElementById('loginClose');
-const mobileMenu = document.getElementById('mobileMenu');
 const courseDashboard = document.getElementById('courseDashboard');
 const userGreeting = document.getElementById('userGreeting');
 
-// Open/Close Login Modal triggers safely
 if (navLoginLink) {
     navLoginLink.addEventListener('click', (e) => {
         e.preventDefault();
@@ -284,7 +318,6 @@ if (navLoginLink) {
     });
 }
 
-// Safely attach mobile listener only if the element actually exists
 if (mobileLoginLink) {
     mobileLoginLink.addEventListener('click', (e) => {
         e.preventDefault();
@@ -307,7 +340,6 @@ if (loginOverlay) {
     });
 }
 
-// Handle User Authentication Submission
 async function handleMemberLogin() {
     const emailInput = document.getElementById('loginEmail');
     const errDiv = document.getElementById('err-login');
@@ -366,7 +398,6 @@ function handleLogout() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// Auto-login check on page reload if session exists
 window.addEventListener('DOMContentLoaded', () => {
     const savedUser = sessionStorage.getItem('roboland_user');
     if (savedUser) {
@@ -374,5 +405,4 @@ window.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// Run this on page load
 refreshHeroStats();
