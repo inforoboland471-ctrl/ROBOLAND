@@ -50,7 +50,7 @@ if(announce) {
     }
 }
 
-// Mobile Nav Toggle
+// Mobile Nav Toggle Logic
 const navToggle = document.getElementById('navToggle');
 const mobileMenu = document.getElementById('mobileMenu');
 if (navToggle && mobileMenu) {
