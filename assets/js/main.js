@@ -272,35 +272,37 @@ const loginOverlay = document.getElementById('loginOverlay');
 const navLoginLink = document.getElementById('navLoginLink');
 const mobileLoginLink = document.getElementById('mobileLoginLink');
 const loginClose = document.getElementById('loginClose');
-const mobileMenu = document.getElementById('mobileMenu'); // Added reference
+const mobileMenu = document.getElementById('mobileMenu');
 const courseDashboard = document.getElementById('courseDashboard');
 const userGreeting = document.getElementById('userGreeting');
 
-// Open/Close Login Modal triggers for Desktop and Mobile
+// Open/Close Login Modal triggers safely
 if (navLoginLink) {
     navLoginLink.addEventListener('click', (e) => {
         e.preventDefault();
-        if (loginOverlay) loginOverlay.classList.add('open');
+        loginOverlay?.classList.add('open');
     });
 }
 
 if (mobileLoginLink) {
     mobileLoginLink.addEventListener('click', (e) => {
         e.preventDefault();
-        if (loginOverlay) loginOverlay.classList.add('open');
-        if (mobileMenu) mobileMenu.classList.remove('open');
+        loginOverlay?.classList.add('open');
+        mobileMenu?.classList.remove('open');
     });
 }
 
 if (loginClose) {
     loginClose.addEventListener('click', () => {
-        if (loginOverlay) loginOverlay.classList.remove('open');
+        loginOverlay?.classList.remove('open');
     });
 }
 
 if (loginOverlay) {
     loginOverlay.addEventListener('click', (e) => {
-        if (e.target === loginOverlay) loginOverlay.classList.remove('open');
+        if (e.target === loginOverlay) {
+            loginOverlay.classList.remove('open');
+        }
     });
 }
 
@@ -319,7 +321,7 @@ async function handleMemberLogin() {
         }
         return;
     }
-    if (errDiv) errDiv.classList.remove('show');
+    errDiv?.classList.remove('show');
 
     try {
         const response = await fetch('https://roboland-5xzc.onrender.com/login', {
@@ -332,7 +334,7 @@ async function handleMemberLogin() {
 
         if (response.ok && data.success) {
             sessionStorage.setItem('roboland_user', data.fullName);
-            if (loginOverlay) loginOverlay.classList.remove('open');
+            loginOverlay?.classList.remove('open');
             showCourseDashboard(data.fullName);
         } else {
             if (errDiv) {
