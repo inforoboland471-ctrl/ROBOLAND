@@ -211,6 +211,7 @@ adminOpenLink.addEventListener('click', (e) => {
     loadAdminData(); 
 });
 adminClose.addEventListener('click', () => adminOverlay.classList.remove('open'));
+
 /* ---------------- SWIPER INITIALIZATION ---------------- */
 const swiper = new Swiper('.projects__container', {
   autoplay: { delay: 1400, disableOnInteraction: false },
@@ -257,7 +258,6 @@ async function refreshHeroStats() {
   if (!el) return;
   
   try {
-    // This fetches from your new public /count endpoint
     const response = await fetch('https://roboland-5xzc.onrender.com/registrations/count');
     const data = await response.json();
     animateCount(el, data.count);
@@ -267,19 +267,26 @@ async function refreshHeroStats() {
   }
 }
 
-
 /* ---------------- MEMBER LOGIN & COURSE ACCESS ENGINE ---------------- */
 const loginOverlay = document.getElementById('loginOverlay');
 const navLoginLink = document.getElementById('navLoginLink');
+const mobileLoginLink = document.getElementById('mobileLoginLink');
 const loginClose = document.getElementById('loginClose');
 const courseDashboard = document.getElementById('courseDashboard');
 const userGreeting = document.getElementById('userGreeting');
 
-// Open/Close Login Modal triggers
+// Open/Close Login Modal triggers for Desktop and Mobile
 if (navLoginLink) {
     navLoginLink.addEventListener('click', (e) => {
         e.preventDefault();
         loginOverlay.classList.add('open');
+    });
+}
+if (mobileLoginLink) {
+    mobileLoginLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        loginOverlay.classList.add('open');
+        if(mobileMenu) mobileMenu.classList.remove('open');
     });
 }
 if (loginClose) {
@@ -316,10 +323,7 @@ async function handleMemberLogin() {
         const data = await response.json();
 
         if (response.ok && data.success) {
-            // Save state in browser session storage
             sessionStorage.setItem('roboland_user', data.fullName);
-            
-            // Close modal and show course section
             loginOverlay.classList.remove('open');
             showCourseDashboard(data.fullName);
         } else {
