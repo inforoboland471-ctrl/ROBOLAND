@@ -129,8 +129,7 @@ def delete_registration(id):
 def get_count():
     count = Registration.query.count()
     return jsonify({"count": count})
-
-# 1. Request OTP Code Endpoint (Sends real email via Brevo)
+# 1. Request OTP Code Endpoint (Prints code securely to Render Logs for instant testing/login)
 @app.route('/request-otp', methods=['POST'])
 def request_otp():
     data = request.json
@@ -143,12 +142,13 @@ def request_otp():
     code = str(random.randint(100000, 999999))
     otp_storage[email] = code
     
-    sent = send_email_otp(email, user.full_name, code)
-    if sent:
-        return jsonify({"success": True, "message": "Verification code sent to email!"}), 200
-    else:
-        return jsonify({"success": False, "message": "Failed to send email. Check SMTP settings on Render."}), 500
-
+    # Print code securely to your Render Dashboard Logs
+    print(f"\n========================================")
+    print(f" [ROBOLAND OTP] For {user.full_name} ({email})")
+    print(f" VERIFICATION CODE: {code}")
+    print(f"========================================\n", flush=True)
+    
+    return jsonify({"success": True, "message": "Verification code generated!"}), 200
 # 2. Verify OTP Code Endpoint
 @app.route('/verify-login', methods=['POST'])
 def verify_login():
