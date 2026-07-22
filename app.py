@@ -129,7 +129,7 @@ def get_count():
     count = Registration.query.count()
     return jsonify({"count": count})
 
-# 1. Request OTP Code Endpoint (Sends real email via Resend)
+# 1. Request OTP Code Endpoint (Sends real email via Resend API)
 @app.route('/request-otp', methods=['POST'])
 def request_otp():
     data = request.json
