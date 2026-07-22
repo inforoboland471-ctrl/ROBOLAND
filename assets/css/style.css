@@ -518,9 +518,14 @@ footer { background: var(--ink); color: #8C97AF; padding: 48px 24px 28px; }
    ========================================================================== */
 .admin-overlay {
   display: none; position: fixed; inset: 0; z-index: 200;
-  background: rgba(11,18,32,0.6); padding: 40px 20px; overflow-y: auto;
+  background: rgba(11,18,32,0.75); padding: 40px 20px; overflow-y: auto;
+  backdrop-filter: blur(4px); /* Adds a nice modern blur to the background */
 }
-.admin-overlay.open { display: block; }
+.admin-overlay.open { 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+}
 .admin-panel {
   background: var(--paper); max-width: 960px; margin: 0 auto;
   border-radius: 16px; padding: 32px; box-shadow: 0 40px 80px rgba(0,0,0,0.4);
