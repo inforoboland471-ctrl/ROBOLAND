@@ -29,7 +29,7 @@ async function saveRegistration(record) {
 async function fetchAllRegistrations() {
   const password = prompt("Enter Admin Password:");
   if (password === null || password.trim() === "") {
-    return null; // Returns null if user clicks Cancel or leaves it empty
+    return null; 
   }
   try {
     const response = await fetch('https://roboland-5xzc.onrender.com/registrations', {
@@ -77,7 +77,6 @@ window.addEventListener("load", () => {
   if (typeof gsap === "undefined") return;
   if (typeof TextPlugin !== "undefined") gsap.registerPlugin(TextPlugin);
   
-  // Typewriter
   const phrases = ["one build at a time.", "one circuit at a time.", "one line of code at a time.", "one robot at a time."];
   const mainHeading = document.getElementById("main-heading");
   const walkText = document.getElementById("walk-text");
@@ -96,7 +95,6 @@ window.addEventListener("load", () => {
       tl.add(loopTl);
   }
 
-  // Ticker
   const tickerText = document.getElementById("tickerText");
   if (tickerText) {
       gsap.to(tickerText, { xPercent: 50, ease: "none", duration: 10, repeat: -1, modifiers: { xPercent: gsap.utils.unitize(x => parseFloat(x) % 50) } });
@@ -180,78 +178,15 @@ function formatTimestamp(iso){
   }catch(e){ return iso || '—'; }
 }
 
-async function loadAdminData(){
-  if(adminTbody) adminTbody.innerHTML = '<tr><td colspan="8" style="text-align:center;">Loading...</td></tr>';
-  
-  const records = await fetchAllRegistrations();
-  
-  if(adminTotal) adminTotal.textContent = records.length;
-  
-  const cities = new Set(records.map(r => (r.city || '').trim().toLowerCase()).filter(Boolean));
-  if(adminCities) adminCities.textContent = cities.size;
-
-  const counts = {};
-  records.forEach(r => { if(r.interest) counts[r.interest] = (counts[r.interest]||0)+1; });
-  let topKey = null, topVal = 0;
-  Object.keys(counts).forEach(k => { if(counts[k] > topVal){ topVal = counts[k]; topKey = k; } });
-  if(adminTopInterest) adminTopInterest.textContent = topKey ? (INTEREST_LABELS[topKey] || topKey) : '—';
-
-  if(records.length === 0){
-    if(adminTbody) adminTbody.innerHTML = '';
-    if(adminEmpty) adminEmpty.style.display = 'block';
-    return;
-  }
-  if(adminEmpty) adminEmpty.style.display = 'none';
-
-  if(adminTbody) {
-      adminTbody.innerHTML = records.map(r => `
-        <tr>
-          <td>${escapeHtml(r.fullName || '—')}</td>
-          <td>${escapeHtml(r.age || '—')}</td>
-          <td>${escapeHtml(r.email || '—')}</td>
-          <td>${escapeHtml(r.phone || '—')}</td>
-          <td>${escapeHtml(r.city || '—')}</td>
-          <td>${escapeHtml(INTEREST_LABELS[r.interest] || r.interest || '—')}</td>
-          <td>${escapeHtml(formatTimestamp(r.registeredAt))}</td>
-          <td><button class="admin-btn" style="padding: 4px 8px;" onclick="deleteRegistration(${r.id})">Delete</button></td>
-        </tr>
-      `).join('');
-  }
-}
-
-async function deleteRegistration(id) {
-    if (!confirm("Are you sure you want to delete this registration?")) return;
-    const password = prompt("Enter Admin Password:");
-    if (!password) return;
-    try {
-        const response = await fetch(`https://roboland-5xzc.onrender.com/registrations/${id}`, {
-            method: 'DELETE', headers: { 'Authorization': password }
-        });
-        if (response.status === 200) { 
-            alert("Deleted successfully!"); 
-            loadAdminData(); 
-        } else {
-            alert("Failed to delete. Incorrect password.");
-        }
-    } catch(e) {
-        alert("Deletion network error.");
-    }
-}
-
 if (adminOpenLink) {
     adminOpenLink.addEventListener('click', async (e) => { 
         e.preventDefault(); 
         
-        // Load data first, which triggers the password prompt
         const records = await fetchAllRegistrations();
-        
-        // If records is null (user clicked Cancel or entered wrong password), stop here!
         if (records === null) return; 
 
-        // Otherwise, open the overlay and render the fetched records directly
         if(adminOverlay) adminOverlay.classList.add('open');
         
-        // Populate the admin dashboard with the records we just fetched
         if(adminTotal) adminTotal.textContent = records.length;
         const cities = new Set(records.map(r => (r.city || '').trim().toLowerCase()).filter(Boolean));
         if(adminCities) adminCities.textContent = cities.size;
@@ -287,6 +222,25 @@ if (adminOpenLink) {
 }
 if (adminClose && adminOverlay) {
     adminClose.addEventListener('click', () => adminOverlay.classList.remove('open'));
+}
+
+async function deleteRegistration(id) {
+    if (!confirm("Are you sure you want to delete this registration?")) return;
+    const password = prompt("Enter Admin Password:");
+    if (!password) return;
+    try {
+        const response = await fetch(`https://roboland-5xzc.onrender.com/registrations/${id}`, {
+            method: 'DELETE', headers: { 'Authorization': password }
+        });
+        if (response.status === 200) { 
+            alert("Deleted successfully!"); 
+            adminOpenLink.click(); 
+        } else {
+            alert("Failed to delete. Incorrect password.");
+        }
+    } catch(e) {
+        alert("Deletion network error.");
+    }
 }
 
 /* ---------------- SWIPER INITIALIZATION ---------------- */
@@ -387,7 +341,7 @@ if (loginOverlay) {
     });
 }
 
-// Step 1: Request OTP Code to be emailed
+// Step 1: Request OTP Code
 async function handleSendOtp() {
     const emailInput = document.getElementById('loginEmail');
     const errDiv = document.getElementById('err-login');
@@ -415,7 +369,6 @@ async function handleSendOtp() {
 
         if (response.ok && data.success) {
             tempLoginEmail = email;
-            // Switch view to Step 2 (Code Input Box)
             document.getElementById('stepEmailWrap').style.display = 'none';
             document.getElementById('stepCodeWrap').style.display = 'block';
         } else {
@@ -508,4 +461,5 @@ window.addEventListener('DOMContentLoaded', () => {
         showCourseDashboard(savedUser);
     }
 });
+
 refreshHeroStats();
