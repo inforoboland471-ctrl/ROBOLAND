@@ -346,13 +346,15 @@ async function refreshHeroStats() {
   }
 }
 
-/* ---------------- MEMBER LOGIN & COURSE ACCESS ENGINE ---------------- */
+/* ---------------- MEMBER LOGIN & EMAIL OTP ENGINE ---------------- */
 const loginOverlay = document.getElementById('loginOverlay');
 const navLoginLink = document.getElementById('navLoginLink');
 const mobileLoginLink = document.getElementById('mobileLoginLink');
 const loginClose = document.getElementById('loginClose');
 const courseDashboard = document.getElementById('courseDashboard');
 const userGreeting = document.getElementById('userGreeting');
+
+let tempLoginEmail = "";
 
 if (navLoginLink) {
     navLoginLink.addEventListener('click', (e) => {
@@ -372,6 +374,7 @@ if (mobileLoginLink) {
 if (loginClose) {
     loginClose.addEventListener('click', () => {
         loginOverlay?.classList.remove('open');
+        resetLoginStep();
     });
 }
 
@@ -379,11 +382,13 @@ if (loginOverlay) {
     loginOverlay.addEventListener('click', (e) => {
         if (e.target === loginOverlay) {
             loginOverlay.classList.remove('open');
+            resetLoginStep();
         }
     });
 }
 
-async function handleMemberLogin() {
+// Step 1: Request OTP Code to be emailed
+async function handleSendOtp() {
     const emailInput = document.getElementById('loginEmail');
     const errDiv = document.getElementById('err-login');
     if (!emailInput) return;
@@ -400,7 +405,7 @@ async function handleMemberLogin() {
     errDiv?.classList.remove('show');
 
     try {
-        const response = await fetch('https://roboland-5xzc.onrender.com/login', {
+        const response = await fetch('https://roboland-5xzc.onrender.com/request-otp', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email: email })
@@ -409,9 +414,10 @@ async function handleMemberLogin() {
         const data = await response.json();
 
         if (response.ok && data.success) {
-            sessionStorage.setItem('roboland_user', data.fullName);
-            loginOverlay?.classList.remove('open');
-            showCourseDashboard(data.fullName);
+            tempLoginEmail = email;
+            // Switch view to Step 2 (Code Input Box)
+            document.getElementById('stepEmailWrap').style.display = 'none';
+            document.getElementById('stepCodeWrap').style.display = 'block';
         } else {
             if (errDiv) {
                 errDiv.textContent = data.message || "Email not registered.";
@@ -419,12 +425,67 @@ async function handleMemberLogin() {
             }
         }
     } catch (e) {
-        console.error("Login request error:", e);
+        console.error("OTP Request error:", e);
         if (errDiv) {
             errDiv.textContent = "Connection failed. Please try again.";
             errDiv.classList.add('show');
         }
     }
+}
+
+// Step 2: Verify the 6-digit Code
+async function handleVerifyOtp() {
+    const codeInput = document.getElementById('loginCode');
+    const errDiv = document.getElementById('err-code');
+    if (!codeInput) return;
+    
+    const code = codeInput.value.trim();
+
+    if (code.length !== 6) {
+        if (errDiv) {
+            errDiv.textContent = "Please enter the valid 6-digit verification code.";
+            errDiv.classList.add('show');
+        }
+        return;
+    }
+    errDiv?.classList.remove('show');
+
+    try {
+        const response = await fetch('https://roboland-5xzc.onrender.com/verify-login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: tempLoginEmail, code: code })
+        });
+
+        const data = await response.json();
+
+        if (response.ok && data.success) {
+            sessionStorage.setItem('roboland_user', data.fullName);
+            loginOverlay?.classList.remove('open');
+            showCourseDashboard(data.fullName);
+            resetLoginStep();
+        } else {
+            if (errDiv) {
+                errDiv.textContent = data.message || "Incorrect verification code.";
+                errDiv.classList.add('show');
+            }
+        }
+    } catch (e) {
+        console.error("Verification error:", e);
+        if (errDiv) {
+            errDiv.textContent = "Verification failed. Please try again.";
+            errDiv.classList.add('show');
+        }
+    }
+}
+
+function resetLoginStep() {
+    document.getElementById('stepEmailWrap').style.display = 'block';
+    document.getElementById('stepCodeWrap').style.display = 'none';
+    const emailEl = document.getElementById('loginEmail');
+    const codeEl = document.getElementById('loginCode');
+    if(emailEl) emailEl.value = '';
+    if(codeEl) codeEl.value = '';
 }
 
 function showCourseDashboard(name) {
@@ -447,5 +508,4 @@ window.addEventListener('DOMContentLoaded', () => {
         showCourseDashboard(savedUser);
     }
 });
-
 refreshHeroStats();
