@@ -35,9 +35,14 @@
   <header class="site">
     <nav class="nav">
       <div class="logo">
-      <img src="images/logo.png" alt="Roboland Logo" style="width: 32px; height: 32px; object-fit: contain;">
-      Roboland
-    </div>
+        <svg class="mark" viewBox="0 0 32 32" fill="none">
+          <rect x="1" y="1" width="30" height="30" rx="8" stroke="#3ED6C4" stroke-width="2"/>
+          <circle cx="11" cy="13" r="2.4" fill="#3ED6C4"/>
+          <circle cx="21" cy="13" r="2.4" fill="#F4A300"/>
+          <path d="M9 21c1.5 2 5 3 7 3s5.5-1 7-3" stroke="#F7F5F0" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        Roboland
+      </div>
       <div class="navlinks">
         <a href="#mission">Mission</a>
         <a href="#programs">Programs</a>
@@ -260,8 +265,8 @@
           <p class="bio">Oversees Roboland's operations and partnerships to grow its reach nationwide.</p>
         </div>
         <div class="team-card reveal">
-          <div class="avatar"><img src="images/tech-head-soumaya-bhowmik.png" alt="Soumya Bhowmick" onerror="this.style.display='none'"></div>
-          <h3>Soumaya Bhowmik</h3>
+          <div class="avatar"><img src="images/tech-head-soumya-bhowmick.png" alt="Soumya Bhowmick" onerror="this.style.display='none'"></div>
+          <h3>Soumya Bhowmick</h3>
           <div class="role">Co-Founder &amp; Tech Head</div>
           <p class="bio">Drives the technology and curriculum behind Roboland's robotics programs.</p>
         </div>
@@ -368,10 +373,9 @@
       <div class="foot-grid">
         <div>
           <div class="foot-logo">
-          <a href="#" class="footer__logo" style="display: flex; align-items: center; gap: 10px; text-decoration: none; color: inherit;">
-        <img src="images/logo.png" alt="Roboland Logo" style="width: 32px; height: 32px; object-fit: contain;">
-        <span>Roboland</span>
-      </a>
+            <svg width="22" height="22" viewBox="0 0 32 32" fill="none"><rect x="1" y="1" width="30" height="30" rx="8" stroke="#3ED6C4" stroke-width="2"/><circle cx="11" cy="13" r="2.4" fill="#3ED6C4"/><circle cx="21" cy="13" r="2.4" fill="#F4A300"/><path d="M9 21c1.5 2 5 3 7 3s5.5-1 7-3" stroke="#F7F5F0" stroke-width="2" stroke-linecap="round"/></svg>
+            Roboland
+          </div>
           <p class="foot-tag">Growing the youth of India through robotics, one build at a time.</p>
         </div>
         <div class="foot-links">
@@ -544,43 +548,27 @@
     </div>
   </div>
 
-<!--==================== LOGIN MODAL ====================-->
-<div class="admin-overlay" id="loginOverlay">
-  <div class="admin-panel" style="max-width: 420px; text-align: center;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-      <h3 style="margin: 0;">Student Portal Login</h3>
-      <button class="admin-btn close-btn" id="loginClose">Close</button>
-    </div>
-    
-    <!-- STEP 1: Enter Email -->
-    <div id="stepEmailWrap">
-      <p style="font-size: 0.9rem; color: #5b6070; margin-bottom: 20px;">Enter your registered email to receive a verification code.</p>
-      <div class="field" style="text-align: left;">
-        <label for="loginEmail">Registered Email <span class="req">*</span></label>
-        <input type="email" id="loginEmail" placeholder="you@example.com" style="width: 100%; padding: 12px; border-radius: 8px; border: 1.5px solid #D9D3C3;">
+  <!--==================== LOGIN MODAL ====================-->
+  <div class="admin-overlay" id="loginOverlay">
+    <div class="admin-panel" style="max-width: 420px; text-align: center;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 style="margin: 0;">Member Portal Login</h3>
+        <button class="admin-btn close-btn" id="loginClose">Close</button>
       </div>
-      <div class="error-msg" id="err-login" style="margin-bottom: 15px;"></div>
-      <button class="submit-btn" id="sendOtpBtn" onclick="handleSendOtp()">
-        <span class="btn-label">Send Verification Code</span>
-      </button>
-    </div>
-
-    <!-- STEP 2: Enter OTP Code (Hidden initially) -->
-    <div id="stepCodeWrap" style="display: none;">
-      <p style="font-size: 0.9rem; color: #5b6070; margin-bottom: 20px;">We've sent a 6-digit code to your email. Enter it below:</p>
-      <div class="field" style="text-align: left;">
-        <label for="loginCode">6-Digit Code <span class="req">*</span></label>
-        <input type="text" id="loginCode" placeholder="123456" maxlength="6" style="width: 100%; padding: 12px; border-radius: 8px; border: 1.5px solid #D9D3C3; text-align: center; font-size: 1.2rem; letter-spacing: 4px;">
+      <p style="font-size: 0.9rem; color: #5b6070; margin-bottom: 20px;">Enter your registered email to unlock your course access.</p>
+      
+      <div id="loginFormWrap">
+        <div class="field" style="text-align: left;">
+          <label for="loginEmail">Registered Email <span class="req">*</span></label>
+          <input type="email" id="loginEmail" placeholder="you@example.com" style="width: 100%; padding: 12px; border-radius: 8px; border: 1.5px solid #D9D3C3;">
+        </div>
+        <div class="error-msg" id="err-login" style="margin-bottom: 15px;"></div>
+        <button class="submit-btn" id="loginSubmitBtn" onclick="handleMemberLogin()">
+          <span class="btn-label">Access Courses</span>
+        </button>
       </div>
-      <div class="error-msg" id="err-code" style="margin-bottom: 15px;"></div>
-      <button class="submit-btn" onclick="handleVerifyOtp()">
-        <span class="btn-label">Verify & Log In</span>
-      </button>
-      <button class="admin-btn" style="width: 100%; margin-top: 10px;" onclick="resetLoginStep()">Back to Email</button>
     </div>
-
   </div>
-</div>
 
   <!--==================== COURSE ACCESS DASHBOARD ====================-->
   <section id="courseDashboard" style="display: none; background: var(--paper-dim); padding: 80px 24px; min-height: 80vh;">
