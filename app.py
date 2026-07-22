@@ -1,8 +1,6 @@
 import os
 import random
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
+import requests
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
@@ -46,34 +44,35 @@ def is_authorized(auth_header):
     SECRET = os.environ.get("ADMIN_PASSWORD", "RoboLand@2026#")
     return auth_header == SECRET
 
-# Helper function to send email via Brevo SMTP Relay
+# Helper function to send email via Resend HTTP API
 def send_email_otp(recipient_email, recipient_name, otp_code):
-    mail_server = os.environ.get("MAIL_SERVER", "smtp-relay.brevo.com")
-    mail_port = int(os.environ.get("MAIL_PORT", 587))
-    sender_email = os.environ.get("MAIL_USERNAME")
-    sender_password = os.environ.get("MAIL_PASSWORD")
+    resend_api_key = os.environ.get("RESEND_API_KEY")
     
-    if not sender_email or not sender_password:
-        print("SMTP Error: MAIL_USERNAME or MAIL_PASSWORD not set in environment variables.")
+    if not resend_api_key:
+        print("Resend Error: RESEND_API_KEY not set in environment variables.")
         return False
 
+    url = "https://api.resend.com/emails"
+    headers = {
+        "Authorization": f"Bearer {resend_api_key}",
+        "Content-Type": "application/json"
+    }
+    payload = {
+        "from": "Roboland <onboarding@resend.dev>",
+        "to": [recipient_email],
+        "subject": "Your Roboland Verification Code",
+        "html": f"<p>Hello <strong>{recipient_name}</strong>,</p><p>Your verification code to access your Roboland Student Portal is:</p><h2>{otp_code}</h2><p>This code is valid for your current login session.</p>"
+    }
+
     try:
-        msg = MIMEMultipart()
-        msg['From'] = sender_email
-        msg['To'] = recipient_email
-        msg['Subject'] = "Your Roboland Verification Code"
-
-        body = f"Hello {recipient_name},\n\nYour verification code to access your Roboland Student Portal is: {otp_code}\n\nThis code is valid for your current login session."
-        msg.attach(MIMEText(body, 'plain'))
-
-        server = smtplib.SMTP(mail_server, mail_port)
-        server.starttls()
-        server.login(sender_email, sender_password)
-        server.sendmail(sender_email, recipient_email, msg.as_string())
-        server.quit()
-        return True
+        response = requests.post(url, json=payload, headers=headers)
+        if response.status_code in [200, 201]:
+            return True
+        else:
+            print(f"Resend API failed: {response.text}")
+            return False
     except Exception as e:
-        print(f"Email sending failed: {e}")
+        print(f"Email sending exception: {e}")
         return False
 
 # API Endpoint to receive form data
@@ -129,7 +128,8 @@ def delete_registration(id):
 def get_count():
     count = Registration.query.count()
     return jsonify({"count": count})
-# 1. Request OTP Code Endpoint (Prints code securely to Render Logs for instant testing/login)
+
+# 1. Request OTP Code Endpoint (Sends real email via Resend)
 @app.route('/request-otp', methods=['POST'])
 def request_otp():
     data = request.json
@@ -142,13 +142,12 @@ def request_otp():
     code = str(random.randint(100000, 999999))
     otp_storage[email] = code
     
-    # Print code securely to your Render Dashboard Logs
-    print(f"\n========================================")
-    print(f" [ROBOLAND OTP] For {user.full_name} ({email})")
-    print(f" VERIFICATION CODE: {code}")
-    print(f"========================================\n", flush=True)
-    
-    return jsonify({"success": True, "message": "Verification code generated!"}), 200
+    sent = send_email_otp(email, user.full_name, code)
+    if sent:
+        return jsonify({"success": True, "message": "Verification code sent to email!"}), 200
+    else:
+        return jsonify({"success": False, "message": "Failed to send email. Check Resend API key on Render."}), 500
+
 # 2. Verify OTP Code Endpoint
 @app.route('/verify-login', methods=['POST'])
 def verify_login():
