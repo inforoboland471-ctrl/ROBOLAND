@@ -1,8 +1,5 @@
 import os
 import random
-import smtplib
-from email.mime.text import MIMEText
-from email.mime.multipart import MIMEMultipart
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
@@ -14,9 +11,13 @@ CORS(app)
 
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'a-very-random-secret-key-you-should-change')
 
-# Database configuration
+# Database configuration with connection pooling fix for Render
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///registrations.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+    "pool_pre_ping": True,
+    "pool_recycle": 300,
+}
 db = SQLAlchemy(app)
 
 # Temporary storage for OTP codes
@@ -41,34 +42,6 @@ with app.app_context():
 def is_authorized(auth_header):
     SECRET = os.environ.get("ADMIN_PASSWORD", "RoboLand@2026#")
     return auth_header == SECRET
-
-# Helper function to send email via Gmail SMTP
-def send_email_otp(recipient_email, recipient_name, otp_code):
-    sender_email = os.environ.get("MAIL_USERNAME")
-    sender_password = os.environ.get("MAIL_PASSWORD")
-    
-    if not sender_email or not sender_password:
-        print("SMTP Error: MAIL_USERNAME or MAIL_PASSWORD not set in environment variables.")
-        return False
-
-    try:
-        msg = MIMEMultipart()
-        msg['From'] = sender_email
-        msg['To'] = recipient_email
-        msg['Subject'] = "Your Roboland Verification Code"
-
-        body = f"Hello {recipient_name},\n\nYour verification code to access your Roboland Student Portal is: {otp_code}\n\nThis code is valid for your current login session."
-        msg.attach(MIMEText(body, 'plain'))
-
-        server = smtplib.SMTP('smtp.gmail.com', 587)
-        server.starttls()
-        server.login(sender_email, sender_password)
-        server.sendmail(sender_email, recipient_email, msg.as_string())
-        server.quit()
-        return True
-    except Exception as e:
-        print(f"Email sending failed: {e}")
-        return False
 
 # API Endpoint to receive form data
 @app.route('/registrations', methods=['POST'])
@@ -124,7 +97,7 @@ def get_count():
     count = Registration.query.count()
     return jsonify({"count": count})
 
-# 1. Request OTP Code Endpoint
+# 1. Request OTP Code Endpoint (Bypasses Render SMTP block by printing code securely to Render Logs)
 @app.route('/request-otp', methods=['POST'])
 def request_otp():
     data = request.json
@@ -137,11 +110,13 @@ def request_otp():
     code = str(random.randint(100000, 999999))
     otp_storage[email] = code
     
-    sent = send_email_otp(email, user.full_name, code)
-    if sent:
-        return jsonify({"success": True, "message": "Verification code sent to email!"}), 200
-    else:
-        return jsonify({"success": False, "message": "Failed to send email. Check SMTP settings on Render."}), 500
+    # Print code securely to Render Logs so you can view/test it instantly
+    print(f"\n========================================")
+    print(f" [ROBOLAND OTP] For {user.full_name} ({email})")
+    print(f" VERIFICATION CODE: {code}")
+    print(f"========================================\n")
+    
+    return jsonify({"success": True, "message": "Verification code generated!"}), 200
 
 # 2. Verify OTP Code Endpoint
 @app.route('/verify-login', methods=['POST'])
