@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from datetime import datetime, timezone
 
+
 app = Flask(__name__)
 # Enable CORS so your GitHub Pages site can talk to this backend
 CORS(app) 
