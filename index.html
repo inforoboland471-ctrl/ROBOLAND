@@ -1,361 +1,422 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Roboland — Building India's Next Builders</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Roboland — Building India's Next Builders</title>
 
-<!--=============== FAVICON ===============-->
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230B1220'/%3E%3Ccircle cx='11' cy='13' r='2.4' fill='%233ED6C4'/%3E%3Ccircle cx='21' cy='13' r='2.4' fill='%23F4A300'/%3E%3Cpath d='M9 21c1.5 2 5 3 7 3s5.5-1 7-3' stroke='%23F7F5F0' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+  <!--=============== FAVICON ===============-->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%230B1220'/%3E%3Ccircle cx='11' cy='13' r='2.4' fill='%233ED6C4'/%3E%3Ccircle cx='21' cy='13' r='2.4' fill='%23F4A300'/%3E%3Cpath d='M9 21c1.5 2 5 3 7 3s5.5-1 7-3' stroke='%23F7F5F0' stroke-width='2' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
 
-<link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
 
-<!-- Remixicons -->
-<link href="https://cdn.jsdelivr.net/npm/remixicon@4.9.0/fonts/remixicon.css" rel="stylesheet"/>
+  <!--=============== REMIXICONS ===============-->
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.9.0/fonts/remixicon.css" rel="stylesheet"/>
 
-<!--==================== GOOGLE FONTS ====================-->
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <!--==================== GOOGLE FONTS ====================-->
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 
-<!--=============== CSS ===============-->
-<link rel="stylesheet" href="assets/css/style.css">
-
-<!--=============== SWIPER CSS ===============-->
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
-
+  <!--=============== CSS ===============-->
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
 </head>
 <body>
-<!--==================== SUB HEADER ====================-->
-<div class="announce" id="announce">
-  <div class="announce-track">
-    <div class="announce-content" id="tickerText">
-      <span>Registrations are open for Roboland's 2026 nationwide robotics challenge. <a href="#register">Register now</a> &nbsp;&nbsp;·&nbsp;&nbsp;</span>         
+  <!--==================== SUB HEADER ====================-->
+  <div class="announce" id="announce">
+    <div class="announce-track">
+      <div class="announce-content" id="tickerText">
+        <span>Registrations are open for Roboland's 2026 nationwide robotics challenge. <a href="#register">Register now</a> &nbsp;&nbsp;·&nbsp;&nbsp;</span>         
+      </div>
     </div>
+    <button class="announce-close" id="announceClose" aria-label="Dismiss announcement">&times;</button>
   </div>
-  <button class="announce-close" id="announceClose" aria-label="Dismiss announcement">&times;</button>
-</div>
 
-<!--==================== HEADER ====================-->
-<header class="site">
-  <nav class="nav">
-    <div class="logo">
-      <svg class="mark" viewBox="0 0 32 32" fill="none">
-        <rect x="1" y="1" width="30" height="30" rx="8" stroke="#3ED6C4" stroke-width="2"/>
-        <circle cx="11" cy="13" r="2.4" fill="#3ED6C4"/>
-        <circle cx="21" cy="13" r="2.4" fill="#F4A300"/>
-        <path d="M9 21c1.5 2 5 3 7 3s5.5-1 7-3" stroke="#F7F5F0" stroke-width="2" stroke-linecap="round"/>
-      </svg>
-      Roboland
-    </div>
-    <div class="navlinks">
+  <!--==================== HEADER ====================-->
+  <header class="site">
+    <nav class="nav">
+      <div class="logo">
+        <svg class="mark" viewBox="0 0 32 32" fill="none">
+          <rect x="1" y="1" width="30" height="30" rx="8" stroke="#3ED6C4" stroke-width="2"/>
+          <circle cx="11" cy="13" r="2.4" fill="#3ED6C4"/>
+          <circle cx="21" cy="13" r="2.4" fill="#F4A300"/>
+          <path d="M9 21c1.5 2 5 3 7 3s5.5-1 7-3" stroke="#F7F5F0" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        Roboland
+      </div>
+      <div class="navlinks">
+        <a href="#mission">Mission</a>
+        <a href="#programs">Programs</a>
+        <a href="#project">Project</a>
+        <a href="#team">Team</a>
+        <a href="#register">Register</a>
+        <a href="#login" id="navLoginLink">Login</a>
+      </div>
+      <div class="nav-right">
+        <button class="nav-cta" onclick="document.getElementById('register').scrollIntoView()">Join now</button>
+        <button class="navtoggle" id="navToggle" aria-label="Open menu" aria-expanded="false">
+          <svg viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+    </nav>
+    
+    <!-- Mobile Menu Section -->
+    <div class="mobile-menu" id="mobileMenu">
       <a href="#mission">Mission</a>
       <a href="#programs">Programs</a>
       <a href="#project">Project</a>
       <a href="#team">Team</a>
       <a href="#register">Register</a>
-      <a href="#login" id="navLoginLink">Login</a>
+      <a href="#login" id="mobileLoginLink">Login</a>
     </div>
-    <div class="nav-right">
-      <button class="nav-cta" onclick="document.getElementById('register').scrollIntoView()">Join now</button>
-      <button class="navtoggle" id="navToggle" aria-label="Open menu" aria-expanded="false">
-        <svg viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
-      </button>
-    </div>
-  </nav>
-  
-  <div class="mobile-menu" id="mobileMenu">
-    <a href="#mission">Mission</a>
-    <a href="#programs">Programs</a>
-    <a href="#project">Project</a>
-    <a href="#team">Team</a>
-    <a href="#register">Register</a>
-    <a href="#login" id="mobileLoginLink">Login</a>
-  </div>
-</header>
+  </header>
 
-<!--==================== MAIN ====================-->
-<section class="hero">
-  <div class="hero-grid">
-    <div>
-      <span class="eyebrow">Robotics · Education · India</span>
-      <h1>
-        <span id="main-heading" style="display: inline-block;">Growing the youth of India,</span> 
-        <br>
-        <span class="accent" id="walk-text">one build at a time.</span><span class="cursor">|</span>
-      </h1>
-      <p class="lead">Roboland gives students across India hands-on robotics training, mentorship, and competitions — turning curiosity into engineering skill, one circuit at a time.</p>
-      <div class="hero-ctas">
-        <button class="btn-primary" onclick="document.getElementById('register').scrollIntoView()">
-          Register for Roboland
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </button>
-        <a href="#programs" class="btn-ghost">Explore programs</a>
-      </div>
-      <div class="stats-strip">
-        <div class="stat-card">
-          <div class="num" id="statRegistered">—</div>
-          <div class="lbl">Registered</div>
-        </div>
-        <div class="stat-card">
-          <div class="num">3</div>
-          <div class="lbl">Programs</div>
-        </div>
-        <div class="stat-card">
-          <div class="num">1</div>
-          <div class="lbl">Mission</div>
-        </div>
-      </div>
-    </div>
-    <div class="rig" aria-hidden="true">
-      <img src="assets/img/hero_img_png.png" alt="Roboland Robot Rig">
-    </div>
-  </div>
-</section>
-
-<!--==================== MISSION ====================-->
-<section class="mission" id="mission">
-  <div class="wrap">
-    <div class="section-head reveal">
-      <span class="eyebrow">Why Roboland</span>
-      <h2>India's next generation of engineers starts with a screwdriver, not a syllabus.</h2>
-      <p>We believe every student — regardless of city or school — deserves the chance to build something real. Roboland exists to put robotics kits, mentors, and competitions within reach of young builders across the country.</p>
-    </div>
-
-    <div class="mission-band reveal">
-      <h3>Our aim is simple: <span>grow the youth of India</span> into confident makers, coders, and problem-solvers.</h3>
-      <ul class="mission-list">
-        <li><span class="tag">LEARN</span> Structured robotics curriculum for schools and colleges</li>
-        <li><span class="tag">BUILD</span> Hands-on kits and lab sessions led by mentors</li>
-        <li><span class="tag">COMPETE</span> Regional and national robotics challenges</li>
-        <li><span class="tag">GROW</span> Career pathways into engineering and technology</li>
-      </ul>
-    </div>
-  </div>
-</section>
-
-<!--==================== PROGRAM ====================-->
-<section class="programs" id="programs">
-  <div class="wrap">
-    <div class="section-head reveal">
-      <span class="eyebrow">What we offer</span>
-      <h2>Programs built for every stage of a young builder's journey.</h2>
-    </div>
-    <div class="card-grid">
-      <div class="prog-card reveal">
-        <div class="prog-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 12h16M12 4v16" stroke="#3ED6C4" stroke-width="2" stroke-linecap="round"/></svg>
-        </div>
-        <h3>Foundation Labs</h3>
-        <p>Beginner-friendly robotics and coding sessions for school students, introducing circuits, sensors, and logic through guided builds.</p>
-      </div>
-      <div class="prog-card reveal">
-        <div class="prog-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 3l8 4-8 4-8-4 8-4zM4 15l8 4 8-4" stroke="#F4A300" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </div>
-        <h3>Build Challenges</h3>
-        <p>Team-based competitions where students design, build, and program robots to solve real tasks — from obstacle courses to rescue simulations.</p>
-      </div>
-      <div class="prog-card reveal">
-        <div class="prog-icon">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="3.5" stroke="#3ED6C4" stroke-width="2"/><path d="M5 20c1.5-4 4.5-6 7-6s5.5 2 7 6" stroke="#3ED6C4" stroke-width="2" stroke-linecap="round"/></svg>
-        </div>
-        <h3>Mentor Network</h3>
-        <p>Direct access to engineers and educators who guide students through projects, portfolio building, and next steps in tech careers.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!--==================== PROJECT SECTION ====================-->
-<section id="project">
-  <div class="wrap">
-    <div class="section-head reveal">
-      <span class="eyebrow">Projects</span>
-      <h2>Frameworks and robots built for every stage of the journey.</h2>
-    </div>
-
-    <div class="projects__wrapper container">
-      <div class="projects__container swiper">
-        <div class="swiper-wrapper">
-          
-          <div class="projects__content swiper-slide">
-            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRoD5FPNXhOJO_HxI3D76omz2GjTZuGxg9MqH7nWi25puAOaNW8UKqPtSo&s" class="projects__img" alt="project_image_01">
-            <div>
-              <span class="projects__subtitle">Sensor</span>
-              <h1 class="projects__title">Robotic Hand</h1>
-              <a href="#" class="projects__button">View Demo <i class="ri-arrow-right-up-line"></i></a>
-            </div>
-          </div>
-
-          <div class="projects__content swiper-slide">
-            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQNSqvUBRNCLPFK-eZhtV9-9-AaovsHI2JgzcB2K5fSiQ&s" class="projects__img" alt="project_image_02">
-            <div>
-              <span class="projects__subtitle">Sensor</span>
-              <h1 class="projects__title">Robotic Hand</h1>
-              <a href="#" class="projects__button">View Demo <i class="ri-arrow-right-up-line"></i></a>
-            </div>
-          </div>
-
-          <div class="projects__content swiper-slide">
-            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSJkD4ykocUTiYhKQGH-p8CpHQSlUaNMwAIoLEp1oYBiQ&s" class="projects__img" alt="project_image_03">
-            <div>
-              <span class="projects__subtitle">Sensor</span>
-              <h1 class="projects__title">Robotic Hand</h1>
-              <a href="#" class="projects__button">View Demo <i class="ri-arrow-right-up-line"></i></a>
-            </div>
-          </div>
-
-          <div class="projects__content swiper-slide">
-            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT3t7t5YwozaKv4-GEvY0QzSmnrzMIFuyS8h7VhGsV97g&s=10" class="projects__img" alt="project_image_04">
-            <div>
-              <span class="projects__subtitle">Sensor</span>
-              <h1 class="projects__title">Robotic Hand</h1>
-              <a href="#" class="projects__button">View Demo <i class="ri-arrow-right-up-line"></i></a>
-            </div>
-          </div>
-
-        </div>
-
-        <div class="swiper-button-next"></div>
-        <div class="swiper-button-prev"></div>
-        <div class="swiper-pagination"></div> 
-      </div>
-    </div>
-  </div>
-</section>
-
-<!--==================== TEAM ====================-->
-<section class="team" id="team">
-  <div class="wrap">
-    <div class="section-head reveal">
-      <span class="eyebrow">Leadership</span>
-      <h2>The team building Roboland.</h2>
-    </div>
-    <div class="team-grid">
-      <div class="team-card reveal">
-        <div class="avatar"><img src="assets/img/arkya_img.jpeg" alt="Arkyadeep Sarkar"></div>
-        <h3>Arkyadeep Sarkar</h3>
-        <div class="role">Chief Executive Officer</div>
-        <p class="bio">Leads Roboland's vision to bring robotics education to students across India.</p>
-      </div>
-      <div class="team-card reveal">
-        <div class="avatar"><img src="assets/img/adrita_img.jpeg" alt="Adrita Nayek"></div>
-        <h3>Adrita Nayek</h3>
-        <div class="role">Co-Founder &amp; Managing Director</div>
-        <p class="bio">Oversees Roboland's operations and partnerships to grow its reach nationwide.</p>
-      </div>
-      <div class="team-card reveal">
-        <div class="avatar"><img src="assets/img/somoya_img.jpeg" alt="Soumya Bhowmick"></div>
-        <h3>Soumya Bhowmick</h3>
-        <div class="role">Co-Founder &amp; Tech Head</div>
-        <p class="bio">Drives the technology and curriculum behind Roboland's robotics programs.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!--==================== REGISTRATION ====================-->
-<section class="register" id="register">
-  <div class="wrap reg-wrap">
-    <div class="reg-copy reveal">
-      <span class="eyebrow">Join Roboland</span>
-      <h2>Register your spot and start building.</h2>
-      <p>Whether you're a student, parent, or school representative — sign up to get access to Roboland's labs, kits, and competitions.</p>
-      <ul class="reg-points">
-        <li>Access to foundation and advanced robotics labs</li>
-        <li>Entry into regional and national build challenges</li>
-        <li>Mentorship from working engineers</li>
-        <li>Certificate of participation for every program</li>
-      </ul>
-    </div>
-
-    <div class="reg-card reveal">
-      <div id="regFormWrap">
-        <h3>Registration</h3>
-        <p class="sub">Takes less than two minutes.</p>
-        <form id="regForm" novalidate>
-          <div class="row-2">
-            <div class="field">
-              <label for="fullName">Full name <span class="req">*</span></label>
-              <input type="text" id="fullName" name="fullName" placeholder="e.g. Priya Sharma" autocomplete="name">
-              <div class="error-msg" id="err-fullName">Please enter your full name.</div>
-            </div>
-            <div class="field">
-              <label for="age">Age <span class="req">*</span></label>
-              <input type="number" id="age" name="age" placeholder="e.g. 16" min="5" max="99">
-              <div class="error-msg" id="err-age">Please enter a valid age (5–99).</div>
-            </div>
-          </div>
-
-          <div class="row-2">
-            <div class="field">
-              <label for="email">Email <span class="req">*</span></label>
-              <input type="email" id="email" name="email" placeholder="you@example.com" autocomplete="email">
-              <div class="error-msg" id="err-email">Please enter a valid email address.</div>
-            </div>
-            <div class="field">
-              <label for="phone">Phone number <span class="req">*</span></label>
-              <input type="tel" id="phone" name="phone" placeholder="10-digit mobile number" autocomplete="tel">
-              <div class="error-msg" id="err-phone">Please enter a valid 10-digit phone number.</div>
-            </div>
-          </div>
-
-          <div class="row-2">
-            <div class="field">
-              <label for="city">City <span class="req">*</span></label>
-              <input type="text" id="city" name="city" placeholder="e.g. Siliguri" autocomplete="address-level2">
-              <div class="error-msg" id="err-city">Please enter your city.</div>
-            </div>
-            <div class="field">
-              <label for="interest">Interest area <span class="req">*</span></label>
-              <select id="interest" name="interest">
-                <option value="">Select one</option>
-                <option value="foundation">Foundation Labs</option>
-                <option value="challenges">Build Challenges</option>
-                <option value="mentorship">Mentor Network</option>
-                <option value="school-partnership">School Partnership</option>
-              </select>
-              <div class="error-msg" id="err-interest">Please select an interest area.</div>
-            </div>
-          </div>
-
-          <div class="check-row">
-            <input type="checkbox" id="terms" name="terms">
-            <label for="terms">I agree to be contacted by Roboland regarding programs, schedules, and updates.</label>
-          </div>
-          <div class="error-msg" id="err-terms" style="margin-top:-14px;margin-bottom:14px;">Please accept to continue.</div>
-
-          <button type="submit" class="submit-btn" id="submitBtn">
-            <span class="spinner"></span>
-            <span class="btn-label">Complete registration</span>
+  <!--==================== MAIN ====================-->
+  <section class="hero">
+    <div class="hero-grid">
+      <div>
+        <span class="eyebrow">Robotics · Education · India</span>
+        <h1>
+          <span id="main-heading" style="display: inline-block;">Growing the youth of India,</span> 
+          <br>
+          <span class="accent" id="walk-text">one build at a time.</span><span class="cursor">|</span>
+        </h1>
+        <p class="lead">Roboland gives students across India hands-on robotics training, mentorship, and competitions — turning curiosity into engineering skill, one circuit at a time.</p>
+        <div class="hero-ctas">
+          <button class="btn-primary" onclick="document.getElementById('register').scrollIntoView()">
+            Register for Roboland
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
           </button>
-          <div class="storage-note" id="storageNote">Previewing outside Claude — this entry will only be saved for this session.</div>
-        </form>
-      </div>
-
-      <div class="success-box" id="successBox">
-        <div class="check-circle">
-          <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#0B1220" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <a href="#programs" class="btn-ghost">Explore programs</a>
         </div>
-        <h3>You're registered!</h3>
-        <p id="successName">Welcome to Roboland. We'll be in touch with next steps soon.</p>
-        <button class="btn-ghost" style="margin-top:20px;color:var(--text-dark);border-color:#D9D3C3;" onclick="resetForm()">Register another</button>
+        <div class="stats-strip">
+          <div class="stat-card">
+            <div class="num" id="statRegistered">—</div>
+            <div class="lbl">Registered</div>
+          </div>
+          <div class="stat-card">
+            <div class="num">3</div>
+            <div class="lbl">Programs</div>
+          </div>
+          <div class="stat-card">
+            <div class="num">1</div>
+            <div class="lbl">Mission</div>
+          </div>
+        </div>
+      </div>
+      <div class="rig" aria-hidden="true">
+        <svg viewBox="0 0 300 300">
+          <path class="trace" d="M20 40 H120 V100" />
+          <path class="trace t2" d="M280 260 H180 V200" />
+          <path class="trace t3" d="M20 260 H90 V160 H150" />
+          <circle class="node" style="animation-delay:0.9s" cx="120" cy="100" r="4" fill="#3ED6C4"/>
+          <circle class="node" style="animation-delay:1.1s" cx="180" cy="200" r="4" fill="#FFD27A"/>
+          <circle class="node" style="animation-delay:1.3s" cx="150" cy="160" r="4" fill="#3ED6C4"/>
+          <g class="bot">
+            <rect x="105" y="110" width="90" height="80" rx="14" fill="#141F35" stroke="#3ED6C4" stroke-width="2"/>
+            <circle cx="132" cy="140" r="7" fill="#3ED6C4"/>
+            <circle cx="168" cy="140" r="7" fill="#F4A300"/>
+            <rect x="122" y="160" width="56" height="10" rx="5" fill="#3ED6C4" opacity="0.6"/>
+            <rect x="90" y="130" width="15" height="10" rx="4" fill="#1E2A4A" stroke="#3ED6C4" stroke-width="1.5"/>
+            <rect x="195" y="130" width="15" height="10" rx="4" fill="#1E2A4A" stroke="#3ED6C4" stroke-width="1.5"/>
+            <rect x="140" y="90" width="20" height="20" rx="4" fill="#1E2A4A" stroke="#F4A300" stroke-width="1.5"/>
+          </g>
+        </svg>
       </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!--==================== FOOTER ====================-->
-<footer class="footer">
-  <div class="footer__container container grid">
+  <!--==================== MISSION ====================-->
+  <section class="mission" id="mission">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">Why Roboland</span>
+        <h2>India's next generation of engineers starts with a screwdriver, not a syllabus.</h2>
+        <p>We believe every student — regardless of city or school — deserves the chance to build something real. Roboland exists to put robotics kits, mentors, and competitions within reach of young builders across the country.</p>
+      </div>
+
+      <div class="mission-band reveal">
+        <h3>Our aim is simple: <span>grow the youth of India</span> into confident makers, coders, and problem-solvers.</h3>
+        <ul class="mission-list">
+          <li><span class="tag">LEARN</span> Structured robotics curriculum for schools and colleges</li>
+          <li><span class="tag">BUILD</span> Hands-on kits and lab sessions led by mentors</li>
+          <li><span class="tag">COMPETE</span> Regional and national robotics challenges</li>
+          <li><span class="tag">GROW</span> Career pathways into engineering and technology</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!--==================== PROGRAM ====================-->
+  <section class="programs" id="programs">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">What we offer</span>
+        <h2>Programs built for every stage of a young builder's journey.</h2>
+      </div>
+      <div class="card-grid">
+        <div class="prog-card reveal">
+          <div class="prog-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 12h16M12 4v16" stroke="#3ED6C4" stroke-width="2" stroke-linecap="round"/></svg>
+          </div>
+          <h3>Foundation Labs</h3>
+          <p>Beginner-friendly robotics and coding sessions for school students, introducing circuits, sensors, and logic through guided builds.</p>
+        </div>
+        <div class="prog-card reveal">
+          <div class="prog-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 3l8 4-8 4-8-4 8-4zM4 15l8 4 8-4" stroke="#F4A300" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <h3>Build Challenges</h3>
+          <p>Team-based competitions where students design, build, and program robots to solve real tasks — from obstacle courses to rescue simulations.</p>
+        </div>
+        <div class="prog-card reveal">
+          <div class="prog-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="3.5" stroke="#3ED6C4" stroke-width="2"/><path d="M5 20c1.5-4 4.5-6 7-6s5.5 2 7 6" stroke="#3ED6C4" stroke-width="2" stroke-linecap="round"/></svg>
+          </div>
+          <h3>Mentor Network</h3>
+          <p>Direct access to engineers and educators who guide students through projects, portfolio building, and next steps in tech careers.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!--==================== PROJECT SECTION ====================-->
+  <section id="project">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">Projects</span>
+        <h2>Frameworks and robots built for every stage of the journey.</h2>
+      </div>
+
+      <div class="container">
+        <!-- main swiper container -->
+        <div class="projects__container swiper">
+          <div class="swiper-wrapper">
+            
+            <!-- project 1 -->
+            <div class="projects__content swiper-slide">
+              <img src="https://placehold.co/250x250/1E2A4A/F7F5F0?text=Robotic+Hand" class="projects__img" alt="Robotic Hand">
+              <div>
+                <span class="projects__subtitle">Sensor</span>
+                <h1 class="projects__title">Robotic Hand</h1>
+                <a href="#" class="projects__button">View Demo<i class="ri-arrow-right-up-line"></i></a>
+              </div>
+            </div>
+
+            <!-- project 2 -->
+            <div class="projects__content swiper-slide">
+              <img src="https://placehold.co/250x250/3ED6C4/141F35?text=Autonomous+Bot" class="projects__img" alt="Autonomous Bot">
+              <div>
+                <span class="projects__subtitle">AI & Logic</span>
+                <h1 class="projects__title">Autonomous Bot</h1>
+                <a href="#" class="projects__button">View Demo<i class="ri-arrow-right-up-line"></i></a>
+              </div>
+            </div>
+
+            <!-- project 3 -->
+            <div class="projects__content swiper-slide">
+              <img src="https://placehold.co/250x250/F4A300/141F35?text=Drone+Proto" class="projects__img" alt="Drone Prototype">
+              <div>
+                <span class="projects__subtitle">Aerodynamics</span>
+                <h1 class="projects__title">Drone Prototype</h1>
+                <a href="#" class="projects__button">View Demo<i class="ri-arrow-right-up-line"></i></a>
+              </div>
+            </div>
+
+            <!-- project 4 -->
+            <div class="projects__content swiper-slide">
+              <img src="https://placehold.co/250x250/0B1220/3ED6C4?text=Line+Follower" class="projects__img" alt="Line Follower">
+              <div>
+                <span class="projects__subtitle">Circuits</span>
+                <h1 class="projects__title">Line Follower</h1>
+                <a href="#" class="projects__button">View Demo<i class="ri-arrow-right-up-line"></i></a>
+              </div>
+            </div>
+
+          </div>
+
+          <div class="swiper-button-next"></div>
+          <div class="swiper-button-prev"></div>
+
+          <!-- SWIPER PAGINATION -->
+          <div class="swiper-pagination"></div> 
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!--==================== TEAM ====================-->
+  <section class="team" id="team">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <span class="eyebrow">Leadership</span>
+        <h2>The team building Roboland.</h2>
+      </div>
+      <div class="team-grid">
+        <div class="team-card reveal">
+          <div class="avatar"><img src="images/ceo-arkyadeep-sarkar.png" alt="Arkyadeep Sarkar" onerror="this.style.display='none'"></div>
+          <h3>Arkyadeep Sarkar</h3>
+          <div class="role">Chief Executive Officer</div>
+          <p class="bio">Leads Roboland's vision to bring robotics education to students across India.</p>
+        </div>
+        <div class="team-card reveal">
+          <div class="avatar"><img src="images/md-adrita-nayek.png" alt="Adrita Nayek" onerror="this.style.display='none'"></div>
+          <h3>Adrita Nayek</h3>
+          <div class="role">Co-Founder &amp; Managing Director</div>
+          <p class="bio">Oversees Roboland's operations and partnerships to grow its reach nationwide.</p>
+        </div>
+        <div class="team-card reveal">
+          <div class="avatar"><img src="images/tech-head-soumya-bhowmick.png" alt="Soumya Bhowmick" onerror="this.style.display='none'"></div>
+          <h3>Soumya Bhowmick</h3>
+          <div class="role">Co-Founder &amp; Tech Head</div>
+          <p class="bio">Drives the technology and curriculum behind Roboland's robotics programs.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!--==================== REGISTRATION ====================-->
+  <section class="register" id="register">
+    <div class="wrap reg-wrap">
+      <div class="reg-copy reveal">
+        <span class="eyebrow">Join Roboland</span>
+        <h2>Register your spot and start building.</h2>
+        <p>Whether you're a student, parent, or school representative — sign up to get access to Roboland's labs, kits, and competitions.</p>
+        <ul class="reg-points">
+          <li>Access to foundation and advanced robotics labs</li>
+          <li>Entry into regional and national build challenges</li>
+          <li>Mentorship from working engineers</li>
+          <li>Certificate of participation for every program</li>
+        </ul>
+      </div>
+
+      <div class="reg-card reveal">
+        <div id="regFormWrap">
+          <h3>Registration</h3>
+          <p class="sub">Takes less than two minutes.</p>
+          <form id="regForm" novalidate>
+            <div class="row-2">
+              <div class="field">
+                <label for="fullName">Full name <span class="req">*</span></label>
+                <input type="text" id="fullName" name="fullName" placeholder="e.g. Priya Sharma" autocomplete="name">
+                <div class="error-msg" id="err-fullName">Please enter your full name.</div>
+              </div>
+              <div class="field">
+                <label for="age">Age <span class="req">*</span></label>
+                <input type="number" id="age" name="age" placeholder="e.g. 16" min="5" max="99">
+                <div class="error-msg" id="err-age">Please enter a valid age (5–99).</div>
+              </div>
+            </div>
+
+            <div class="row-2">
+              <div class="field">
+                <label for="email">Email <span class="req">*</span></label>
+                <input type="email" id="email" name="email" placeholder="you@example.com" autocomplete="email">
+                <div class="error-msg" id="err-email">Please enter a valid email address.</div>
+              </div>
+              <div class="field">
+                <label for="phone">Phone number <span class="req">*</span></label>
+                <input type="tel" id="phone" name="phone" placeholder="10-digit mobile number" autocomplete="tel">
+                <div class="error-msg" id="err-phone">Please enter a valid 10-digit phone number.</div>
+              </div>
+            </div>
+
+            <div class="row-2">
+              <div class="field">
+                <label for="city">City <span class="req">*</span></label>
+                <input type="text" id="city" name="city" placeholder="e.g. Siliguri" autocomplete="address-level2">
+                <div class="error-msg" id="err-city">Please enter your city.</div>
+              </div>
+              <div class="field">
+                <label for="interest">Interest area <span class="req">*</span></label>
+                <select id="interest" name="interest">
+                  <option value="">Select one</option>
+                  <option value="foundation">Foundation Labs</option>
+                  <option value="challenges">Build Challenges</option>
+                  <option value="mentorship">Mentor Network</option>
+                  <option value="school-partnership">School Partnership</option>
+                </select>
+                <div class="error-msg" id="err-interest">Please select an interest area.</div>
+                <div id="interestDescription" style="margin-top: 15px; padding: 12px; border-left: 4px solid #3ED6C4; background: #141f35; color: #f7f5f0; display: none; font-size: 0.9rem;">
+                </div>
+              </div>
+            </div>
+
+            <div class="check-row">
+              <input type="checkbox" id="terms" name="terms">
+              <label for="terms">I agree to be contacted by Roboland regarding programs, schedules, and updates.</label>
+            </div>
+            <div class="error-msg" id="err-terms" style="margin-top:-14px;margin-bottom:14px;">Please accept to continue.</div>
+
+            <button type="submit" class="submit-btn" id="submitBtn">
+              <span class="spinner"></span>
+              <span class="btn-label">Complete registration</span>
+            </button>
+            <div class="storage-note" id="storageNote">Previewing outside Claude — this entry will only be saved for this session.</div>
+          </form>
+        </div>
+
+        <div class="success-box" id="successBox">
+          <div class="check-circle">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M5 13l4 4L19 7" stroke="#0B1220" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+          <h3>You're registered!</h3>
+          <p id="successName">Welcome to Roboland. We'll be in touch with next steps soon.</p>
+          <button class="btn-ghost" style="margin-top:20px;color:var(--text-dark);border-color:#D9D3C3;" onclick="resetForm()">Register another</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!--==================== FOOTER ====================-->
+  <footer>
+    <div class="wrap">
+      <div class="foot-grid">
+        <div>
+          <div class="foot-logo">
+            <svg width="22" height="22" viewBox="0 0 32 32" fill="none"><rect x="1" y="1" width="30" height="30" rx="8" stroke="#3ED6C4" stroke-width="2"/><circle cx="11" cy="13" r="2.4" fill="#3ED6C4"/><circle cx="21" cy="13" r="2.4" fill="#F4A300"/><path d="M9 21c1.5 2 5 3 7 3s5.5-1 7-3" stroke="#F7F5F0" stroke-width="2" stroke-linecap="round"/></svg>
+            Roboland
+          </div>
+          <p class="foot-tag">Growing the youth of India through robotics, one build at a time.</p>
+        </div>
+        <div class="foot-links">
+          <div>
+            <h4>Explore</h4>
+            <a href="#mission">Mission</a>
+            <a href="#programs">Programs</a>
+            <a href="#project">Projects</a>
+            <a href="#team">Team</a>
+          </div>
+          <div>
+            <h4>Get involved</h4>
+            <a href="#register">Register</a>
+            <a href="#team">Leadership</a>
+          </div><div>
+          <h4>Team access</h4>
+            <a href="#" id="adminOpenLink">View registrations</a>
+          </div>
+        </div>
+          <div>
+              <div class="footer__container container grid">
+    
+    
     <div class="footer__info">
       <a href="#" class="footer__logo">
         <svg class="mark" viewBox="0 0 32 32" width="32" height="32" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <rect width="32" height="32" rx="8" fill="#0B131F"/>
-          <rect x="3" y="3" width="26" height="26" rx="7" stroke="#3ED6C4" stroke-width="2.5"/>
-          <circle cx="11.5" cy="13.5" r="2.2" fill="#3ED6C4"/>
-          <circle cx="20.5" cy="13.5" r="2.2" fill="#F4A300"/>
-          <path d="M10 20.5C11.5 22.5 14.5 23.5 16 23.5C17.5 23.5 20.5 22.5 22 20.5" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
-        </svg>
+  
+  <rect width="32" height="32" rx="8" fill="#0B131F"/>
+  
+ 
+  <rect x="3" y="3" width="26" height="26" rx="7" stroke="#3ED6C4" stroke-width="2.5"/>
+  
+  
+  <circle cx="11.5" cy="13.5" r="2.2" fill="#3ED6C4"/>
+  
+ 
+  <circle cx="20.5" cy="13.5" r="2.2" fill="#F4A300"/>
+  
+  
+  <path d="M10 20.5C11.5 22.5 14.5 23.5 16 23.5C17.5 23.5 20.5 22.5 22 20.5" stroke="#FFFFFF" stroke-width="2" stroke-linecap="round"/>
+</svg>
         <span>Roboland</span>
       </a>
 
@@ -364,13 +425,22 @@
       </p>
 
       <div class="footer__social">
-        <a href="#" target="_blank" class="footer__social-link"><i class="ri-facebook-circle-fill"></i></a>
-        <a href="https://www.instagram.com/robol_and?utm_source=qr" target="_blank" class="footer__social-link"><i class="ri-instagram-line"></i></a>
-        <a href="https://discord.gg/JdQK2ZkpF" target="_blank" class="footer__social-link"><i class="ri-discord-line"></i></a>
-        <a href="https://www.linkedin.com/in/info-roboland-b83695422?utm_source=share_via&utm_content=profile&utm_medium=member_ios" target="_blank" class="footer__social-link"><i class="ri-linkedin-fill"></i></a>
+        <a href="#" target="_blank" class="footer__social-link">
+          <i class="ri-facebook-circle-fill"></i>
+        </a>
+        <a href="https://www.instagram.com/robol_and?utm_source=qr" target="_blank" class="footer__social-link">
+          <i class="ri-instagram-line"></i>
+        </a>
+        <a href="https://discord.gg/JdQK2ZkpF" target="_blank" class="footer__social-link">
+          <i class="ri-discord-line"></i>
+        </a>
+        <a href="https://www.linkedin.com/in/info-roboland-b83695422?utm_source=share_via&utm_content=profile&utm_medium=member_ios" target="_blank" class="footer__social-link">
+          <i class="ri-linkedin-fill"></i>
+        </a>
       </div>
     </div>
 
+    <!-- Column 2: Company -->
     <div>
       <h3 class="footer__title">Company</h3>
       <ul class="footer__links">
@@ -381,6 +451,7 @@
       </ul>
     </div>
 
+    <!-- Column 3: Support -->
     <div>
       <h3 class="footer__title">Support</h3>
       <ul class="footer__links">
@@ -388,10 +459,10 @@
         <li><a href="#" class="footer__link">Support center</a></li>
         <li><a href="#" class="footer__link">Feedback</a></li>
         <li><a href="#" class="footer__link">Contacts</a></li>
-        <li><a href="#" class="footer__link" id="adminOpenLink" style="color: var(--cyan);">View registrations</a></li>
       </ul>
     </div>
 
+    <!-- Column 4: Newsletter -->
     <div class="footer__newsletter">
       <h3 class="footer__title">Stay Connected</h3>
       <p>Questions or feedback? We'd <br> love to hear from you.</p>
@@ -404,129 +475,138 @@
       </form>
     </div>
 
+    <!-- Copyright -->
     <span class="footer__copy">
       &#169; All Rights Reserved By Roboland
     </span>
-  </div>
-</footer>
 
-<!--==================== ADMIN ====================-->
-<div class="admin-overlay" id="adminOverlay">
-  <div class="admin-panel">
-    <div class="admin-head">
-      <div>
-        <h2>Registrations</h2>
-        <p>Entries submitted through the Roboland registration form.</p>
+  </div>
+
+          
+        </div>
       </div>
-      <div class="admin-actions">
-        <button class="admin-btn" id="adminRefresh">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 4v6h6M20 20v-6h-6M4.5 15a8 8 0 0013.9 3.2M19.5 9A8 8 0 005.6 5.8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          Refresh
+      <div class="foot-bottom">
+        <span>© 2026 Roboland. All rights reserved.</span>
+        <span>Made for the young builders of India.</span>
+      </div>
+    </div>
+  </footer>
+
+  <!--==================== ADMIN ====================-->
+  <div class="admin-overlay" id="adminOverlay">
+    <div class="admin-panel">
+      <div class="admin-head">
+        <div>
+          <h2>Registrations</h2>
+          <p>Entries submitted through the Roboland registration form.</p>
+        </div>
+        <div class="admin-actions">
+          <button class="admin-btn" id="adminRefresh">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M4 4v6h6M20 20v-6h-6M4.5 15a8 8 0 0013.9 3.2M19.5 9A8 8 0 005.6 5.8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Refresh
+          </button>
+          <button class="admin-btn" id="adminExport">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Export CSV
+          </button>
+          <button class="admin-btn close-btn" id="adminClose">Close</button>
+        </div>
+      </div>
+
+      <div class="admin-stats">
+        <div class="admin-stat">
+          <div class="num" id="adminTotal">0</div>
+          <div class="lbl">Total registrations</div>
+        </div>
+        <div class="admin-stat">
+          <div class="num" id="adminCities">0</div>
+          <div class="lbl">Cities represented</div>
+        </div>
+        <div class="admin-stat">
+          <div class="num" id="adminTopInterest">—</div>
+          <div class="lbl">Top interest area</div>
+        </div>
+      </div>
+
+      <div class="admin-table-wrap">
+        <table class="admin-table" id="adminTable">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Age</th>
+              <th>Email</th>
+              <th>Phone</th>
+              <th>City</th>
+              <th>Interest</th>
+              <th>Registered</th>
+            </tr>
+          </thead>
+          <tbody id="adminTbody"></tbody>
+        </table>
+        <div class="admin-empty" id="adminEmpty" style="display:none;">No registrations yet — they'll show up here as people sign up.</div>
+      </div>
+    </div>
+  </div>
+
+  <!--==================== LOGIN MODAL ====================-->
+  <div class="admin-overlay" id="loginOverlay">
+    <div class="admin-panel" style="max-width: 420px; text-align: center;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 style="margin: 0;">Member Portal Login</h3>
+        <button class="admin-btn close-btn" id="loginClose">Close</button>
+      </div>
+      <p style="font-size: 0.9rem; color: #5b6070; margin-bottom: 20px;">Enter your registered email to unlock your course access.</p>
+      
+      <div id="loginFormWrap">
+        <div class="field" style="text-align: left;">
+          <label for="loginEmail">Registered Email <span class="req">*</span></label>
+          <input type="email" id="loginEmail" placeholder="you@example.com" style="width: 100%; padding: 12px; border-radius: 8px; border: 1.5px solid #D9D3C3;">
+        </div>
+        <div class="error-msg" id="err-login" style="margin-bottom: 15px;"></div>
+        <button class="submit-btn" id="loginSubmitBtn" onclick="handleMemberLogin()">
+          <span class="btn-label">Access Courses</span>
         </button>
-        <button class="admin-btn" id="adminExport">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M12 3v12m0 0l-4-4m4 4l4-4M4 19h16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          Export CSV
-        </button>
-        <button class="admin-btn close-btn" id="adminClose">Close</button>
-      </div>
-    </div>
-
-    <div class="admin-stats">
-      <div class="admin-stat">
-        <div class="num" id="adminTotal">0</div>
-        <div class="lbl">Total registrations</div>
-      </div>
-      <div class="admin-stat">
-        <div class="num" id="adminCities">0</div>
-        <div class="lbl">Cities represented</div>
-      </div>
-      <div class="admin-stat">
-        <div class="num" id="adminTopInterest">—</div>
-        <div class="lbl">Top interest area</div>
-      </div>
-    </div>
-
-    <div class="admin-table-wrap">
-      <table class="admin-table" id="adminTable">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Age</th>
-            <th>Email</th>
-            <th>Phone</th>
-            <th>City</th>
-            <th>Interest</th>
-            <th>Registered</th>
-          </tr>
-        </thead>
-        <tbody id="adminTbody"></tbody>
-      </table>
-      <div class="admin-empty" id="adminEmpty" style="display:none;">No registrations yet — they'll show up here as people sign up.</div>
-    </div>
-  </div>
-</div>
-
-<!--==================== LOGIN MODAL ====================-->
-<div class="admin-overlay" id="loginOverlay">
-  <div class="admin-panel" style="max-width: 420px; text-align: center;">
-    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-      <h3 style="margin: 0;">Member Portal Login</h3>
-      <button class="admin-btn close-btn" id="loginClose">Close</button>
-    </div>
-    <p style="font-size: 0.9rem; color: #5b6070; margin-bottom: 20px;">Enter your registered email to unlock your course access.</p>
-    
-    <div id="loginFormWrap">
-      <div class="field" style="text-align: left;">
-        <label for="loginEmail">Registered Email <span class="req">*</span></label>
-        <input type="email" id="loginEmail" placeholder="you@example.com" style="width: 100%; padding: 12px; border-radius: 8px; border: 1.5px solid #D9D3C3;">
-      </div>
-      <div class="error-msg" id="err-login" style="margin-bottom: 15px;"></div>
-      <button class="submit-btn" id="loginSubmitBtn" onclick="handleMemberLogin()">
-        <span class="btn-label">Access Courses</span>
-      </button>
-    </div>
-  </div>
-</div>
-
-<!--==================== COURSE ACCESS DASHBOARD ====================-->
-<section id="courseDashboard" style="display: none; background: var(--paper-dim); padding: 80px 24px; min-height: 80vh;">
-  <div class="wrap">
-    <div class="section-head reveal in-view">
-      <span class="eyebrow">Student Portal</span>
-      <h2 id="userGreeting">Welcome back!</h2>
-      <p>You have full access to all Roboland labs, kits documentation, and beginner-to-advanced engineering modules.</p>
-      <button class="btn-ghost" style="margin-top: 15px; color: var(--text-dark); border-color: var(--text-dark);" onclick="handleLogout()">Log out</button>
-    </div>
-
-    <div class="card-grid" style="margin-top: 30px;">
-      <div class="prog-card reveal in-view">
-        <div class="prog-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 12h16M12 4v16" stroke="#3ED6C4" stroke-width="2" stroke-linecap="round"/></svg></div>
-        <h3>Module 1: Circuit Basics</h3>
-        <p>Learn breadboards, resistors, LEDs, and power distribution for beginner builds.</p>
-        <a href="#" class="projects__button" style="display:inline-block; margin-top:15px; color:var(--cyan-dim); font-weight:600;">Start Learning <i class="ri-arrow-right-up-line"></i></a>
-      </div>
-      <div class="prog-card reveal in-view">
-        <div class="prog-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 3l8 4-8 4-8-4 8-4zM4 15l8 4 8-4" stroke="#F4A300" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-        <h3>Module 2: Arduino & Microcontrollers</h3>
-        <p>Write your first C++ scripts to control sensors, motors, and automated logic paths.</p>
-        <a href="#" class="projects__button" style="display:inline-block; margin-top:15px; color:var(--cyan-dim); font-weight:600;">Start Learning <i class="ri-arrow-right-up-line"></i></a>
-      </div>
-      <div class="prog-card reveal in-view">
-        <div class="prog-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="3.5" stroke="#3ED6C4" stroke-width="2"/><path d="M5 20c1.5-4 4.5-6 7-6s5.5 2 7 6" stroke="#3ED6C4" stroke-width="2" stroke-linecap="round"/></svg></div>
-        <h3>Module 3: Advanced Robotics & AI</h3>
-        <p>Integrate computer vision, obstacle avoidance algorithms, and wireless modules.</p>
-        <a href="#" class="projects__button" style="display:inline-block; margin-top:15px; color:var(--cyan-dim); font-weight:600;">Start Learning <i class="ri-arrow-right-up-line"></i></a>
       </div>
     </div>
   </div>
-</section>
 
-<!--==================== SCRIPTS ====================-->
-<script src="https://unpkg.com/scrollreveal"></script>
-<script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/TextPlugin.min.js"></script>
-<script src="assets/js/main.js"></script>
+  <!--==================== COURSE ACCESS DASHBOARD ====================-->
+  <section id="courseDashboard" style="display: none; background: var(--paper-dim); padding: 80px 24px; min-height: 80vh;">
+    <div class="wrap">
+      <div class="section-head reveal in-view">
+        <span class="eyebrow">Student Portal</span>
+        <h2 id="userGreeting">Welcome back!</h2>
+        <p>You have full access to all Roboland labs, kits documentation, and beginner-to-advanced engineering modules.</p>
+        <button class="btn-ghost" style="margin-top: 15px; color: var(--text-dark); border-color: var(--text-dark);" onclick="handleLogout()">Log out</button>
+      </div>
 
+      <div class="card-grid" style="margin-top: 30px;">
+        <div class="prog-card reveal in-view">
+          <div class="prog-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 12h16M12 4v16" stroke="#3ED6C4" stroke-width="2" stroke-linecap="round"/></svg></div>
+          <h3>Module 1: Circuit Basics</h3>
+          <p>Learn breadboards, resistors, LEDs, and power distribution for beginner builds.</p>
+          <a href="#" class="projects__button" style="display:inline-block; margin-top:15px; color:var(--cyan-dim); font-weight:600;">Start Learning <i class="ri-arrow-right-up-line"></i></a>
+        </div>
+        <div class="prog-card reveal in-view">
+          <div class="prog-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M12 3l8 4-8 4-8-4 8-4zM4 15l8 4 8-4" stroke="#F4A300" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+          <h3>Module 2: Arduino & Microcontrollers</h3>
+          <p>Write your first C++ scripts to control sensors, motors, and automated logic paths.</p>
+          <a href="#" class="projects__button" style="display:inline-block; margin-top:15px; color:var(--cyan-dim); font-weight:600;">Start Learning <i class="ri-arrow-right-up-line"></i></a>
+        </div>
+        <div class="prog-card reveal in-view">
+          <div class="prog-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="3.5" stroke="#3ED6C4" stroke-width="2"/><path d="M5 20c1.5-4 4.5-6 7-6s5.5 2 7 6" stroke="#3ED6C4" stroke-width="2" stroke-linecap="round"/></svg></div>
+          <h3>Module 3: Advanced Robotics & AI</h3>
+          <p>Integrate computer vision, obstacle avoidance algorithms, and wireless modules.</p>
+          <a href="#" class="projects__button" style="display:inline-block; margin-top:15px; color:var(--cyan-dim); font-weight:600;">Start Learning <i class="ri-arrow-right-up-line"></i></a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!--==================== SCRIPTS ====================-->
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/TextPlugin.min.js"></script>
+  <script src="assets/js/main.js"></script>
 </body>
 </html>
