@@ -1,388 +1,1236 @@
-/*============================================================================
- ==================== ROBOLAND CORE CONFIGURATION & LOGIC ====================
- ============================================================================*/
+/* ==========================================================================
 
-// --- Configuration ---
-const INTEREST_LABELS = {
- foundation: 'Foundation Labs',
- challenges: 'Build Challenges',
- mentorship: 'Mentor Network',
- 'school-partnership': 'School Partnership'
-};
+   DESIGN TOKENS & VARIABLES
 
-/* ---------------- BACKEND API INTERACTION ---------------- */
-async function saveRegistration(record) {
- try {
-   const response = await fetch('https://roboland-5xzc.onrender.com/registrations', {
-     method: 'POST',
-     headers: { 'Content-Type': 'application/json' },
-     body: JSON.stringify(record)
-   });
-   if (!response.ok) throw new Error('Network response was not ok');
-   return { ok: true };
- } catch (e) {
-   console.error('Registration API failed:', e);
-   return { ok: false, error: e };
- }
+   Centralized color palette, spacing, and border-radius settings.
+
+   ========================================================================== */
+
+:root {
+
+  --ink: #0B1220;
+
+  --ink-soft: #141F35;
+
+  --indigo: #1E2A4A;
+
+  --paper: #F7F5F0;
+
+  --paper-dim: #EDE9DF;
+
+  --cyan: #3ED6C4;
+
+  --cyan-dim: #2AA79A;
+
+  --marigold: #F4A300;
+
+  --marigold-soft: #FFD27A;
+
+  --text-dark: #10151F;
+
+  --text-light: #F7F5F0;
+
+  --line: rgba(62,214,196,0.25);
+
+  --radius: 14px;
+
+  --danger: #D9483A;
+
 }
 
-async function fetchAllRegistrations() {
- const password = prompt("Enter Admin Password:");
- if (!password) return [];
- try {
-   const response = await fetch('https://roboland-5xzc.onrender.com/registrations', {
-     headers: { 'Authorization': password }
-   });
-   if (response.status === 401) { alert("Unauthorized access."); return []; }
-   return await response.json();
- } catch (e) {
-   console.error('Fetch registrations failed:', e);
-   return [];
- }
+
+
+/* ==========================================================================
+
+   GLOBAL RESET & BASE STYLES
+
+   Standard normalization and default typography settings.
+
+   ========================================================================== */
+
+* { box-sizing: border-box; }
+
+html { scroll-behavior: smooth; }
+
+body {
+
+  margin: 0;
+
+  background: var(--paper);
+
+  color: var(--text-dark);
+
+  font-family: 'Inter', sans-serif;
+
+  line-height: 1.55;
+
+  -webkit-font-smoothing: antialiased;
+
 }
 
-/* ---------------- UI & ANIMATIONS ---------------- */
-const announce = document.getElementById('announce');
-if(announce) {
-   const announceClose = document.getElementById('announceClose');
-   if(announceClose) {
-       announceClose.addEventListener('click', () => { announce.style.display = 'none'; });
-   }
+
+
+h1, h2, h3 {
+
+  font-family: 'Space Grotesk', sans-serif;
+
+  margin: 0;
+
+  letter-spacing: -0.01em;
+
 }
 
-// Mobile Nav Toggle Logic
-const navToggle = document.getElementById('navToggle');
-const mobileMenu = document.getElementById('mobileMenu');
-if (navToggle && mobileMenu) {
-   navToggle.addEventListener('click', () => {
-       const open = mobileMenu.classList.toggle('open');
-       navToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
-   });
+
+
+/* Utility class for small descriptive headers */
+
+.eyebrow {
+
+  font-family: 'JetBrains Mono', monospace;
+
+  font-size: 0.72rem;
+
+  letter-spacing: 0.14em;
+
+  text-transform: uppercase;
+
+  color: var(--cyan-dim);
+
+  display: inline-flex;
+
+  align-items: center;
+
+  gap: 8px;
+
 }
 
-// Scroll Reveal
-const revealEls = document.querySelectorAll('.reveal');
-if('IntersectionObserver' in window){
- const io = new IntersectionObserver((entries) => {
-   entries.forEach(entry => { if(entry.isIntersecting){ entry.target.classList.add('in-view'); io.unobserve(entry.target); } });
- }, {threshold:0.15});
- revealEls.forEach(el => io.observe(el));
-} else { revealEls.forEach(el => el.classList.add('in-view')); }
 
-// GSAP Animations
-window.addEventListener("load", () => {
- if (typeof gsap === "undefined") return;
- if (typeof TextPlugin !== "undefined") gsap.registerPlugin(TextPlugin);
- 
- // Typewriter
- const phrases = ["one build at a time.", "one circuit at a time.", "one line of code at a time.", "one robot at a time."];
- const mainHeading = document.getElementById("main-heading");
- const walkText = document.getElementById("walk-text");
- 
- if (mainHeading) gsap.set(mainHeading, { opacity: 0, y: 15 });
- if (walkText) {
-     gsap.set(walkText, { text: "" });
-     let tl = gsap.timeline();
-     if (mainHeading) tl.to(mainHeading, { opacity: 1, y: 0, duration: 0.8, ease: "power2.out" });
-     let loopTl = gsap.timeline({ repeat: -1 });
-     phrases.forEach((phrase) => {
-       let wordTl = gsap.timeline({ repeat: 1, yoyo: true, repeatDelay: 1.8 });
-       wordTl.to(walkText, { duration: phrase.length * 0.05, text: { value: phrase, delimiter: "" }, ease: "none" });
-       loopTl.add(wordTl);
-     });
-     tl.add(loopTl);
- }
 
- // Ticker
- const tickerText = document.getElementById("tickerText");
- if (tickerText) {
-     gsap.to(tickerText, { xPercent: 50, ease: "none", duration: 10, repeat: -1, modifiers: { xPercent: gsap.utils.unitize(x => parseFloat(x) % 50) } });
- }
-});
+.eyebrow::before {
 
-/* ---------------- REGISTRATION FORM ENGINE ---------------- */
-const form = document.getElementById('regForm');
-const formWrap = document.getElementById('regFormWrap');
-const successBox = document.getElementById('successBox');
-const successName = document.getElementById('successName');
-const submitBtn = document.getElementById('submitBtn');
+  content: '';
 
-function showError(id, show){
- const input = document.getElementById(id);
- const err = document.getElementById('err-' + id);
- if(input) input.classList.toggle('invalid', show);
- if(err) err.classList.toggle('show', show);
+  width: 6px; height: 6px;
+
+  background: var(--marigold);
+
+  border-radius: 2px;
+
+  display: inline-block;
+
+  transform: rotate(45deg);
+
 }
 
-function validate(){
- let valid = true;
- const fullNameEl = document.getElementById('fullName');
- const interestEl = document.getElementById('interest');
- 
- if(fullNameEl && fullNameEl.value.trim().length < 2) { showError('fullName', true); valid = false; } else { showError('fullName', false); }
- if(interestEl && !interestEl.value) { showError('interest', true); valid = false; } else { showError('interest', false); }
- return valid;
+
+
+a { color: inherit; }
+
+img, svg { display: block; max-width: 100%; }
+
+.wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+
+button { font-family: inherit; cursor: pointer; }
+
+:focus-visible { outline: 3px solid var(--marigold); outline-offset: 3px; }
+
+
+
+/* ==========================================================================
+
+   ANNOUNCEMENT BAR
+
+   Top-level notification area with close functionality.
+
+   ========================================================================== */
+
+.announce {
+
+  background: var(--marigold);
+
+  color: var(--ink);
+
+  font-size: 0.86rem;
+
+  font-weight: 600;
+
+  text-align: center;
+
+  padding: 10px 44px 10px 16px;
+
+  position: relative;
+
 }
 
-if (form) {
-   form.addEventListener('submit', async function(e){
-     e.preventDefault();
-     if(!validate()) return;
-     if(submitBtn) {
-         submitBtn.disabled = true;
-         submitBtn.classList.add('loading');
-     }
-     const record = {
-       fullName: document.getElementById('fullName').value.trim(),
-       age: document.getElementById('age').value,
-       email: document.getElementById('email').value.trim(),
-       phone: document.getElementById('phone').value.trim(),
-       city: document.getElementById('city').value.trim(),
-       interest: document.getElementById('interest').value
-     };
-     const result = await saveRegistration(record);
-     if(submitBtn) {
-         submitBtn.disabled = false;
-         submitBtn.classList.remove('loading');
-     }
-     if (result.ok) {
-       if(successName) successName.textContent = `Welcome to Roboland, ${record.fullName.split(' ')[0]}.`;
-       if(formWrap) formWrap.style.display = 'none';
-       if(successBox) successBox.classList.add('show');
-       refreshHeroStats();
-     } else { alert("Error saving registration."); }
-   });
+.announce a { text-decoration: underline; }
+
+.announce-close {
+
+  position: absolute; right: 14px; top: 50%; transform: translateY(-50%);
+
+  background: none; border: none; color: var(--ink); font-size: 1.1rem;
+
+  line-height: 1; padding: 4px; opacity: 0.7;
+
 }
 
-/* ---------------- ADMIN DASHBOARD ---------------- */
-const adminOverlay = document.getElementById('adminOverlay');
-const adminOpenLink = document.getElementById('adminOpenLink');
-const adminClose = document.getElementById('adminClose');
-const adminTbody = document.getElementById('adminTbody');
-const adminEmpty = document.getElementById('adminEmpty');
-const adminTotal = document.getElementById('adminTotal');
-const adminCities = document.getElementById('adminCities');
-const adminTopInterest = document.getElementById('adminTopInterest');
+.announce-close:hover { opacity: 1; }
 
-function escapeHtml(str){
- return String(str).replace(/[&<>"']/g, ch => ({
-   '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'
- }[ch]));
+
+
+/* ==========================================================================
+
+   NAVIGATION
+
+   Sticky header with desktop link-hover effects and mobile toggle.
+
+   ========================================================================== */
+
+header.site {
+
+  position: sticky; top: 0; z-index: 50;
+
+  background: rgba(11,18,32,0.92);
+
+  backdrop-filter: blur(8px);
+
+  border-bottom: 1px solid var(--line);
+
 }
 
-function formatTimestamp(iso){
- try{
-   const d = new Date(iso);
-   return d.toLocaleDateString() + ' ' + d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
- }catch(e){ return iso || '';
+.nav {
 
- if(records.length === 0){
-   if(adminTbody) adminTbody.innerHTML = '';
-   if(adminEmpty) adminEmpty.style.display = 'block';
-   return;
- }
- if(adminEmpty) adminEmpty.style.display = 'none';
+  display: flex; align-items: center; justify-content: space-between;
 
- if(adminTbody) {
-     adminTbody.innerHTML = records.map(r => `
-       <tr>
-         <td>${escapeHtml(r.fullName || '')}</td>
-         <td>${escapeHtml(r.email || '')}</td>
-         <td>${escapeHtml(r.city || '')}</td>
-         <td>${escapeHtml(formatTimestamp(r.registeredAt))}</td>
-         <td><button class="admin-btn" style="padding: 4px 8px;" onclick="deleteRegistration(${r.id})">Delete</button></td>
-       </tr>
-     `).join('');
- }
+  padding: 16px 24px; max-width: 1120px; margin: 0 auto;
+
+  position: relative;
+
 }
 
-async function deleteRegistration(id) {
-   if (!confirm("Are you sure you want to delete this registration?")) return;
-   const password = prompt("Enter Admin Password:");
-   if (!password) return;
-   try {
-       const response = await fetch(`https://roboland-5xzc.onrender.com/registrations/${id}`, {
-           method: 'DELETE', headers: { 'Authorization': password }
-       });
-       if (response.status === 200) { 
-           alert("Deleted successfully!"); 
-           loadAdminData(); 
-       } else {
-           alert("Failed to delete. Incorrect password.");
-       }
-   } catch(e) {
-       alert("Deletion network error.");
-   }
+.logo {
+
+  display: flex; align-items: center; gap: 10px;
+
+  font-family: 'Space Grotesk', sans-serif;
+
+  font-weight: 700; font-size: 1.15rem; color: var(--text-light);
+
 }
 
-if (adminOpenLink) {
-   adminOpenLink.addEventListener('click', (e) => { 
-       e.preventDefault(); 
-       if(adminOverlay) adminOverlay.classList.add('open'); 
-       loadAdminData(); 
-   });
-}
-if (adminClose && adminOverlay) {
-   adminClose.addEventListener('click', () => adminOverlay.classList.remove('open'));
-}
+.logo .mark { width: 30px; height: 30px; }
 
-/* ---------------- SWIPER INITIALIZATION ---------------- */
-if (typeof Swiper !== 'undefined') {
-   new Swiper('.projects__container', {
-     autoplay: { delay: 1400, disableOnInteraction: false },
-     loop: true,
-     spaceBetween: 24,
-     breakpoints: { 576: { slidesPerView: 2 }, 768: { slidesPerView: 3 } },
-     pagination: { el: '.swiper-pagination', clickable: true },
-     navigation: { nextEl: '.swiper-button-next', prevEl: '.swiper-button-prev' },
-   });
+
+
+.navlinks { display: flex; gap: 28px; align-items: center; }
+
+.navlinks a {
+
+  color: #B9C4DA; text-decoration: none; font-size: 0.92rem; font-weight: 500;
+
+  position: relative;
+
+  padding-bottom: 2px;
+
 }
 
-// Program Descriptions
-const interestSelect = document.getElementById('interest');
-const descBox = document.getElementById('interestDescription');
-const descriptions = {
-   "foundation": "Beginner-friendly robotics and coding sessions.",
-   "challenges": "Team-based competitions to solve real tasks.",
-   "mentorship": "Direct access to engineers and career guidance.",
-   "school-partnership": "Collaborate with us for school robotics labs."
-};
-if (interestSelect && descBox) {
-   interestSelect.addEventListener('change', () => {
-       descBox.innerText = descriptions[interestSelect.value] || "";
-       descBox.style.display = descriptions[interestSelect.value] ? 'block' : 'none';
-   });
+.navlinks a::after {
+
+  content: ''; position: absolute; left: 0; bottom: -4px; width: 0; height: 2px;
+
+  background: var(--cyan); transition: width 0.2s;
+
 }
 
-// Init stats counter
-function animateCount(el, target) {
- const start = 0;
- const duration = 900;
- const startTime = performance.now();
- 
- function step(now) {
-   const p = Math.min((now - startTime) / duration, 1);
-   const eased = 1 - Math.pow(1 - p, 3);
-   el.textContent = Math.round(start + (target - start) * eased);
-   if (p < 1) requestAnimationFrame(step);
- }
- requestAnimationFrame(step);
+.navlinks a:hover { color: var(--cyan); }
+
+.navlinks a:hover::after { width: 100%; }
+
+
+
+.nav-right { display: flex; align-items: center; gap: 14px; }
+
+.nav-cta {
+
+  background: var(--marigold);
+
+  color: var(--ink);
+
+  border: none;
+
+  padding: 10px 20px;
+
+  border-radius: 999px;
+
+  font-weight: 600;
+
+  font-size: 0.9rem;
+
+  transition: transform 0.15s, box-shadow 0.15s;
+
 }
 
-async function refreshHeroStats() {
- const el = document.getElementById('statRegistered');
- if (!el) return;
- 
- try {
-   const response = await fetch('https://roboland-5xzc.onrender.com/registrations/count');
-   const data = await response.json();
-   animateCount(el, data.count);
- } catch (e) {
-   console.error("Could not fetch stats", e);
-   el.textContent = '0';
- }
+.nav-cta:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(244,163,0,0.35); }
+
+
+
+/* Mobile Menu Logic */
+
+.navtoggle {
+
+  display: none; background: none; border: 1px solid rgba(247,245,240,0.25);
+
+  color: var(--text-light); font-size: 1.2rem; border-radius: 8px;
+
+  width: 40px; height: 40px; align-items: center; justify-content: center;
+
 }
 
-/* ---------------- MEMBER LOGIN & COURSE ACCESS ENGINE ---------------- */
-const loginOverlay = document.getElementById('loginOverlay');
-const navLoginLink = document.getElementById('navLoginLink');
-const mobileLoginLink = document.getElementById('mobileLoginLink');
-const loginClose = document.getElementById('loginClose');
-const courseDashboard = document.getElementById('courseDashboard');
-const userGreeting = document.getElementById('userGreeting');
+.navtoggle svg { width: 20px; height: 20px; }
 
-if (navLoginLink) {
-   navLoginLink.addEventListener('click', (e) => {
-       e.preventDefault();
-       loginOverlay?.classList.add('open');
-   });
+.mobile-menu {
+
+  display: none;
+
+  flex-direction: column;
+
+  gap: 2px;
+
+  background: var(--ink-soft);
+
+  border-top: 1px solid var(--line);
+
+  padding: 10px 24px 18px;
+
 }
 
-if (mobileLoginLink) {
-   mobileLoginLink.addEventListener('click', (e) => {
-       e.preventDefault();
-       loginOverlay?.classList.add('open');
-       mobileMenu?.classList.remove('open');
-   });
+.mobile-menu.open { display: flex; }
+
+.mobile-menu a {
+
+  color: #D6DCEA; text-decoration: none; font-size: 0.98rem; font-weight: 500;
+
+  padding: 12px 4px; border-bottom: 1px solid rgba(255,255,255,0.06);
+
 }
 
-if (loginClose) {
-   loginClose.addEventListener('click', () => {
-       loginOverlay?.classList.remove('open');
-   });
+.mobile-menu a:last-child { border-bottom: none; }
+
+
+
+/* ==========================================================================
+
+   HERO SECTION
+
+   Main landing area with circuit SVG background animation.
+
+   ========================================================================== */
+
+.hero {
+
+  position: relative;
+
+  background: radial-gradient(ellipse at 20% -10%, #1a2947 0%, var(--ink) 55%);
+
+  color: var(--text-light);
+
+  overflow: hidden;
+
+  padding: 80px 24px 100px;
+
 }
 
-if (loginOverlay) {
-   loginOverlay.addEventListener('click', (e) => {
-       if (e.target === loginOverlay) {
-           loginOverlay.classList.remove('open');
-       }
-   });
+.hero-grid {
+
+  max-width: 1120px; margin: 0 auto;
+
+  display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 48px; align-items: center;
+
 }
 
-async function handleMemberLogin() {
-   const emailInput = document.getElementById('loginEmail');
-   const errDiv = document.getElementById('err-login');
-   if (!emailInput) return;
-   
-   const email = emailInput.value.trim();
+.hero h1 {
 
-   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-       if (errDiv) {
-           errDiv.textContent = "Please enter a valid email address.";
-           errDiv.classList.add('show');
-       }
-       return;
-   }
-   errDiv?.classList.remove('show');
+  font-size: clamp(2.4rem, 5vw, 3.6rem);
 
-   try {
-       const response = await fetch('https://roboland-5xzc.onrender.com/login', {
-           method: 'POST',
-           headers: { 'Content-Type': 'application/json' },
-           body: JSON.stringify({ email: email })
-       });
+  line-height: 1.05;
 
-       const data = await response.json();
+  margin: 18px 0 20px;
 
-       if (response.ok && data.success) {
-           sessionStorage.setItem('roboland_user', data.fullName);
-           loginOverlay?.classList.remove('open');
-           showCourseDashboard(data.fullName);
-       } else {
-           if (errDiv) {
-               errDiv.textContent = data.message || "Email not registered.";
-               errDiv.classList.add('show');
-           }
-       }
-   } catch (e) {
-       console.error("Login request error:", e);
-       if (errDiv) {
-           errDiv.textContent = "Connection failed. Please try again.";
-           errDiv.classList.add('show');
-       }
-   }
 }
 
-function showCourseDashboard(name) {
-   if (userGreeting) userGreeting.textContent = `Welcome back, ${name}!`;
-   if (courseDashboard) {
-       courseDashboard.style.display = 'block';
-       courseDashboard.scrollIntoView({ behavior: 'smooth' });
-   }
+.hero h1 .accent { color: var(--cyan); }
+
+.hero p.lead {
+
+  font-size: 1.08rem;
+
+  color: #C7D0E4;
+
+  max-width: 46ch;
+
+  margin-bottom: 32px;
+
 }
 
-function handleLogout() {
-   sessionStorage.removeItem('roboland_user');
-   if (courseDashboard) courseDashboard.style.display = 'none';
-   window.scrollTo({ top: 0, behavior: 'smooth' });
+.hero-ctas { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 44px; }
+
+
+
+/* Button variations */
+
+.btn-primary {
+
+  background: var(--cyan);
+
+  color: var(--ink);
+
+  border: none;
+
+  padding: 14px 26px;
+
+  border-radius: 10px;
+
+  font-weight: 700;
+
+  font-size: 0.98rem;
+
+  transition: transform 0.15s, box-shadow 0.15s;
+
+  display: inline-flex; align-items: center; gap: 8px;
+
 }
 
-window.addEventListener('DOMContentLoaded', () => {
-   const savedUser = sessionStorage.getItem('roboland_user');
-   if (savedUser) {
-       showCourseDashboard(savedUser);
-   }
-});
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(62,214,196,0.3); }
 
-refreshHeroStats();
+
+
+.btn-ghost {
+
+  background: transparent;
+
+  color: var(--text-light);
+
+  border: 1px solid rgba(247,245,240,0.3);
+
+  padding: 14px 26px;
+
+  border-radius: 10px;
+
+  font-weight: 600;
+
+  font-size: 0.98rem;
+
+  transition: border-color 0.15s, background 0.15s;
+
+  display: inline-flex; align-items: center; gap: 8px;
+
+  text-decoration: none;
+
+}
+
+.btn-ghost:hover { border-color: var(--cyan); background: rgba(62,214,196,0.08); }
+
+
+
+/* Live stats strip */
+
+.stats-strip {
+
+  display: grid;
+
+  grid-template-columns: repeat(3, 1fr);
+
+  gap: 16px;
+
+  max-width: 520px;
+
+}
+
+.stat-card {
+
+  border: 1px solid rgba(247,245,240,0.14);
+
+  border-radius: 12px;
+
+  padding: 14px 16px;
+
+  background: rgba(255,255,255,0.03);
+
+}
+
+.stat-card .num {
+
+  font-family: 'Space Grotesk', sans-serif;
+
+  font-size: 1.6rem; font-weight: 700; color: var(--cyan);
+
+  line-height: 1;
+
+}
+
+.stat-card .lbl {
+
+  font-size: 0.76rem; color: #9AA6C0; margin-top: 6px;
+
+  text-transform: uppercase; letter-spacing: 0.04em;
+
+}
+
+
+
+/* Circuit Animation Rig */
+
+.rig { position: relative; aspect-ratio: 1/1; }
+
+.rig svg { width: 100%; height: 100%; }
+
+.rig .trace {
+
+  fill: none;
+
+  stroke: var(--cyan);
+
+  stroke-width: 2;
+
+  stroke-linecap: round;
+
+  stroke-dasharray: 400;
+
+  stroke-dashoffset: 400;
+
+  animation: draw 2.6s ease-out forwards;
+
+  opacity: 0.85;
+
+}
+
+.rig .trace.t2 { animation-delay: 0.25s; stroke: var(--marigold-soft); }
+
+.rig .trace.t3 { animation-delay: 0.5s; }
+
+.rig .node {
+
+  fill: var(--paper);
+
+  opacity: 0;
+
+  animation: pop 0.5s ease-out forwards;
+
+}
+
+.rig .bot {
+
+  opacity: 0;
+
+  animation: fadeup 0.8s ease-out forwards, float 4s ease-in-out infinite;
+
+  animation-delay: 1.6s, 2.4s;
+
+}
+
+
+
+/* Animations for Rig */
+
+@keyframes draw { to { stroke-dashoffset: 0; } }
+
+@keyframes pop { to { opacity: 1; } }
+
+@keyframes fadeup {
+
+  from { opacity: 0; transform: translateY(10px); }
+
+  to { opacity: 1; transform: translateY(0); }
+
+}
+
+@keyframes float {
+
+  0%, 100% { transform: translateY(0); }
+
+  50% { transform: translateY(-8px); }
+
+}
+
+
+
+/* Accessibility: Reduced motion support */
+
+@media (prefers-reduced-motion: reduce) {
+
+  .rig .trace, .rig .node, .rig .bot { animation: none !important; opacity: 1 !important; stroke-dashoffset: 0 !important; }
+
+}
+
+
+
+/* ==========================================================================
+
+   SCROLL REVEAL
+
+   Utility class to trigger animation when elements enter the viewport.
+
+   ========================================================================== */
+
+.reveal {
+
+  opacity: 0;
+
+  transform: translateY(22px);
+
+  transition: opacity 0.7s ease, transform 0.7s ease;
+
+}
+
+.reveal.in-view { opacity: 1; transform: translateY(0); }
+
+@media (prefers-reduced-motion: reduce) {
+
+  .reveal { opacity: 1; transform: none; transition: none; }
+
+}
+
+
+
+/* ==========================================================================
+
+   SECTIONS
+
+   Shared padding and container headers.
+
+   ========================================================================== */
+
+section { padding: 88px 24px; }
+
+.section-head { max-width: 640px; margin-bottom: 52px; }
+
+.section-head h2 { font-size: clamp(1.8rem, 3.4vw, 2.4rem); margin-top: 14px; }
+
+.section-head p { color: #3d4457; margin-top: 14px; font-size: 1.02rem; }
+
+
+
+/* Mission Statement */
+
+.mission { background: var(--paper); }
+
+.mission-band {
+
+  background: var(--indigo);
+
+  color: var(--text-light);
+
+  border-radius: 20px;
+
+  padding: 52px 40px;
+
+  display: grid;
+
+  grid-template-columns: 1.2fr 1fr;
+
+  gap: 40px;
+
+  align-items: center;
+
+}
+
+.mission-band h3 { font-size: 1.7rem; line-height: 1.3; }
+
+.mission-band h3 span { color: var(--marigold-soft); }
+
+.mission-list { list-style: none; margin: 0; padding: 0; display: grid; gap: 16px; }
+
+.mission-list li {
+
+  display: flex; gap: 14px;
+
+  font-size: 0.98rem;
+
+  color: #D6DCEA;
+
+  padding-bottom: 16px;
+
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+
+}
+
+.mission-list li:last-child { border-bottom: none; padding-bottom: 0; }
+
+.mission-list .tag {
+
+  font-family: 'JetBrains Mono', monospace;
+
+  color: var(--cyan);
+
+  font-size: 0.82rem;
+
+  min-width: 56px;
+
+}
+
+
+
+/* Programs Cards */
+
+.programs { background: var(--paper-dim); }
+
+.card-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+
+.prog-card {
+
+  background: var(--paper);
+
+  border: 1px solid #E0DACB;
+
+  border-radius: var(--radius);
+
+  padding: 30px 26px;
+
+  transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
+
+}
+
+.prog-card:hover {
+
+  transform: translateY(-6px);
+
+  box-shadow: 0 20px 36px rgba(16,21,31,0.1);
+
+  border-color: var(--cyan-dim);
+
+}
+
+.prog-icon {
+
+  width: 44px; height: 44px;
+
+  border-radius: 10px;
+
+  background: var(--ink);
+
+  display: flex; align-items: center; justify-content: center;
+
+  margin-bottom: 20px;
+
+  transition: transform 0.25s;
+
+}
+
+.prog-card:hover .prog-icon { transform: scale(1.08) rotate(-4deg); }
+
+.prog-card h3 { font-size: 1.15rem; margin-bottom: 10px; }
+
+.prog-card p { font-size: 0.94rem; color: #4b5164; margin: 0; }
+
+
+
+/* Team Section */
+
+.team { background: var(--paper); }
+
+.team-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px; }
+
+.team-card {
+
+  background: var(--ink);
+
+  color: var(--text-light);
+
+  border-radius: var(--radius);
+
+  padding: 28px;
+
+  position: relative;
+
+  overflow: hidden;
+
+  transition: transform 0.25s, box-shadow 0.25s;
+
+}
+
+.team-card:hover { transform: translateY(-6px); box-shadow: 0 20px 40px rgba(11,18,32,0.28); }
+
+.team-card::after {
+
+  content: ''; position: absolute; inset: 0;
+
+  background: linear-gradient(180deg, transparent 60%, rgba(62,214,196,0.08) 100%);
+
+  pointer-events: none;
+
+}
+
+.avatar {
+
+  width: 72px; height: 72px;
+
+  border-radius: 50%;
+
+  background: linear-gradient(135deg, var(--cyan), var(--marigold));
+
+  display: flex; align-items: center; justify-content: center;
+
+  font-family: 'Space Grotesk', sans-serif;
+
+  font-weight: 700; font-size: 1.3rem; color: var(--ink);
+
+  margin-bottom: 18px;
+
+  overflow: hidden;
+
+  border: 2px solid var(--cyan);
+
+  transition: transform 0.25s;
+
+}
+
+.team-card:hover .avatar { transform: scale(1.05); }
+
+.avatar img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+.team-card h3 { font-size: 1.15rem; margin-bottom: 4px; }
+
+.team-card .role {
+
+  font-family: 'JetBrains Mono', monospace; font-size: 0.78rem;
+
+  color: var(--cyan); text-transform: uppercase; letter-spacing: 0.06em;
+
+}
+
+.team-card p.bio { margin-top: 14px; font-size: 0.9rem; color: #B9C4DA; }
+
+
+
+/* ==========================================================================
+
+   REGISTRATION FORM
+
+   Includes form validation states, loading spinners, and success UI.
+
+   ========================================================================== */
+
+.register {
+
+  background: radial-gradient(ellipse at 80% 0%, #16233f 0%, var(--ink) 60%);
+
+  color: var(--text-light);
+
+}
+
+.reg-wrap { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: 56px; align-items: start; }
+
+.reg-copy h2 { font-size: clamp(1.8rem, 3.4vw, 2.3rem); margin-top: 14px; }
+
+.reg-copy p { color: #C7D0E4; margin-top: 16px; max-width: 42ch; }
+
+.reg-points { list-style: none; margin: 28px 0 0; padding: 0; display: grid; gap: 14px; }
+
+.reg-points li { display: flex; gap: 12px; align-items: flex-start; font-size: 0.94rem; color: #D6DCEA; }
+
+.reg-points li::before {
+
+  content: ''; width: 8px; height: 8px; margin-top: 6px;
+
+  background: var(--cyan); border-radius: 2px; transform: rotate(45deg); flex-shrink: 0;
+
+}
+
+
+
+.reg-card {
+
+  background: var(--paper); color: var(--text-dark);
+
+  border-radius: 20px; padding: 36px;
+
+  box-shadow: 0 30px 60px rgba(0,0,0,0.35);
+
+}
+
+.reg-card h3 { font-size: 1.3rem; margin-bottom: 6px; }
+
+.reg-card .sub { color: #5b6070; font-size: 0.9rem; margin-bottom: 26px; }
+
+
+
+/* Form Fields */
+
+.field { margin-bottom: 18px; }
+
+.field label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 6px; color: #232838; }
+
+.field .req { color: var(--marigold); }
+
+.field input, .field select {
+
+  width: 100%; padding: 12px 14px; border-radius: 8px;
+
+  border: 1.5px solid #D9D3C3; background: #fff;
+
+  font-size: 0.95rem; font-family: 'Inter', sans-serif;
+
+  color: var(--text-dark);
+
+  transition: border-color 0.15s, box-shadow 0.15s;
+
+}
+
+.field input:focus, .field select:focus {
+
+  border-color: var(--cyan-dim); outline: none;
+
+  box-shadow: 0 0 0 3px rgba(42,167,154,0.15);
+
+}
+
+.field input.invalid, .field select.invalid { border-color: var(--danger); }
+
+.error-msg { display: none; color: var(--danger); font-size: 0.8rem; margin-top: 5px; }
+
+.error-msg.show { display: block; }
+
+.row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+
+
+.check-row { display: flex; align-items: flex-start; gap: 10px; margin: 20px 0 24px; }
+
+.check-row input { width: 18px; height: 18px; margin-top: 2px; accent-color: var(--cyan-dim); }
+
+.check-row label { font-size: 0.85rem; color: #4b5164; }
+
+
+
+/* Submit Button & Loading State */
+
+.submit-btn {
+
+  width: 100%; background: var(--marigold); color: var(--ink);
+
+  border: none; padding: 15px; border-radius: 10px;
+
+  font-weight: 700; font-size: 1rem;
+
+  transition: transform 0.15s, box-shadow 0.15s;
+
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+
+}
+
+.submit-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(244,163,0,0.3); }
+
+.submit-btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
+
+.spinner {
+
+  width: 16px; height: 16px; border-radius: 50%;
+
+  border: 2px solid rgba(11,18,32,0.25); border-top-color: var(--ink);
+
+  animation: spin 0.7s linear infinite; display: none;
+
+}
+
+.submit-btn.loading .spinner { display: inline-block; }
+
+.submit-btn.loading .btn-label::after { content: 'Saving…'; }
+
+.submit-btn.loading .btn-label { font-size: 0; }
+
+.submit-btn.loading .btn-label::after { font-size: 1rem; }
+
+@keyframes spin { to { transform: rotate(360deg); } }
+
+
+
+.storage-note { font-size: 0.76rem; color: #8b8f86; margin-top: 10px; text-align: center; display: none; }
+
+.storage-note.show { display: block; }
+
+
+
+/* Success State UI */
+
+.success-box { display: none; text-align: center; padding: 20px 0; }
+
+.success-box.show { display: block; }
+
+.success-box .check-circle {
+
+  width: 56px; height: 56px; margin: 0 auto 18px;
+
+  border-radius: 50%; background: var(--cyan);
+
+  display: flex; align-items: center; justify-content: center;
+
+}
+
+.success-box h3 { margin-bottom: 8px; }
+
+.success-box p { color: #5b6070; font-size: 0.92rem; }
+
+
+
+/* ==========================================================================
+
+   FOOTER
+
+   ========================================================================== */
+
+footer { background: var(--ink); color: #8C97AF; padding: 48px 24px 28px; }
+
+.foot-grid {
+
+  display: flex; justify-content: space-between; flex-wrap: wrap; gap: 24px;
+
+  padding-bottom: 28px; border-bottom: 1px solid rgba(255,255,255,0.08);
+
+}
+
+.foot-logo {
+
+  font-family: 'Space Grotesk', sans-serif; font-weight: 700;
+
+  color: var(--text-light); font-size: 1.1rem;
+
+  display: flex; align-items: center; gap: 8px;
+
+}
+
+.foot-tag { font-size: 0.85rem; margin-top: 8px; max-width: 32ch; }
+
+.foot-links { display: flex; gap: 40px; flex-wrap: wrap; }
+
+.foot-links div h4 {
+
+  font-family: 'JetBrains Mono', monospace; font-size: 0.72rem;
+
+  text-transform: uppercase; letter-spacing: 0.1em;
+
+  color: var(--cyan-dim); margin-bottom: 12px;
+
+}
+
+.foot-links a {
+
+  display: block; color: #8C97AF; text-decoration: none; font-size: 0.88rem; margin-bottom: 8px;
+
+  background: none; border: none; padding: 0; font-family: inherit; cursor: pointer; text-align: left;
+
+}
+
+.foot-links a:hover { color: var(--text-light); }
+
+.foot-bottom { padding-top: 20px; font-size: 0.8rem; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+
+
+
+/* ==========================================================================
+
+   ADMIN PANEL (Modal/Overlay)
+
+   Administrative dashboard view for management.
+
+   ========================================================================== */
+
+.admin-overlay {
+
+  display: none; position: fixed; inset: 0; z-index: 200;
+
+  background: rgba(11,18,32,0.6); padding: 40px 20px; overflow-y: auto;
+
+}
+
+.admin-overlay.open { display: block; }
+
+.admin-panel {
+
+  background: var(--paper); max-width: 960px; margin: 0 auto;
+
+  border-radius: 16px; padding: 32px; box-shadow: 0 40px 80px rgba(0,0,0,0.4);
+
+}
+
+.admin-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; flex-wrap: wrap; gap: 12px; }
+
+.admin-head h2 { font-size: 1.4rem; }
+
+.admin-head p { color: #5b6070; font-size: 0.9rem; margin-top: 6px; }
+
+
+
+.admin-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+
+.admin-btn {
+
+  border: 1.5px solid #D9D3C3; background: #fff; color: var(--text-dark);
+
+  padding: 9px 16px; border-radius: 8px; font-size: 0.85rem; font-weight: 600;
+
+  display: inline-flex; align-items: center; gap: 6px;
+
+  transition: border-color 0.15s, background 0.15s;
+
+}
+
+.admin-btn:hover { border-color: var(--cyan-dim); background: #F1FBF9; }
+
+.admin-btn.close-btn { border-color: transparent; background: var(--ink); color: var(--text-light); }
+
+.admin-btn.close-btn:hover { background: #000; }
+
+
+
+.admin-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin: 22px 0; }
+
+.admin-stat { background: var(--paper-dim); border-radius: 10px; padding: 16px; }
+
+.admin-stat .num { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 1.5rem; }
+
+.admin-stat .lbl { font-size: 0.78rem; color: #5b6070; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.03em; }
+
+
+
+.admin-table-wrap { overflow-x: auto; border: 1px solid #E0DACB; border-radius: 10px; }
+
+table.admin-table { width: 100%; border-collapse: collapse; font-size: 0.86rem; min-width: 640px; }
+
+table.admin-table th {
+
+  text-align: left; background: var(--paper-dim); color: #3d4457;
+
+  padding: 10px 14px; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.03em;
+
+  border-bottom: 1px solid #E0DACB; position: sticky; top: 0;
+
+}
+
+table.admin-table td { padding: 10px 14px; border-bottom: 1px solid #EFEAE0; color: #232838; }
+
+table.admin-table tr:last-child td { border-bottom: none; }
+
+.admin-empty { padding: 40px 20px; text-align: center; color: #5b6070; font-size: 0.92rem; }
+
+
+
+/* ==========================================================================
+
+   RESPONSIVE OVERRIDES
+
+   Breakpoints for tablet and mobile devices.
+
+   ========================================================================== */
+
+@media (max-width: 860px) {
+
+  .navlinks { display: none; }
+
+  .navtoggle { display: flex; }
+
+  .hero-grid { grid-template-columns: 1fr; }
+
+  .rig { max-width: 320px; margin: 0 auto; }
+
+  .stats-strip { max-width: 100%; }
+
+  .mission-band { grid-template-columns: 1fr; padding: 36px 26px; }
+
+  .card-grid, .team-grid { grid-template-columns: 1fr; }
+
+  .reg-wrap { grid-template-columns: 1fr; }
+
+  .row-2 { grid-template-columns: 1fr; }
+
+  .foot-grid { flex-direction: column; }
+
+  .admin-stats { grid-template-columns: 1fr; }
+
+}
+
+
+
+/* animation */
+
+.cursor {
+
+    font-weight: 300;
+
+    color: #3ED6C4;
+
+    margin-left: 2px;
+
+    animation: blink 0.7s infinite alternate;
+
+  }
+
+  @keyframes blink {
+
+    from { opacity: 0; }
+
+    to { opacity: 1; }
+
+  }
+
+
+
+
+
+.announce {
+
+  position: relative;
+
+  overflow: hidden;
+
+  display: flex;
+
+  align-items: center;
+
+  width: 100%;
+
+}
+
+
+
+.announce-track {
+
+  overflow: hidden;
+
+  width: 100%;
+
+  white-space: nowrap;
+
+  display: flex;
+
+}
+
+
+
+.announce-content {
+
+  display: inline-flex;
+
+  white-space: nowrap;
+
+}
+
+
+
+/* Ensure the absolute close button stays on top of the scrolling text */
+
+.announce-close {
+
+  position: absolute;
+
+  right: 15px;
+
+  z-index: 10;
+
+  cursor: pointer;
+
+}
+
+/* Ensure Login Overlay is visible when opened */
+.admin-overlay.open {
+    display: block !important;
+}
