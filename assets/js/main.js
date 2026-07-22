@@ -200,8 +200,11 @@ const adminOverlay = document.getElementById('adminOverlay');
 const adminOpenLink = document.getElementById('adminOpenLink');
 const adminClose = document.getElementById('adminClose');
 const adminRefresh = document.getElementById('adminRefresh');
+const adminExport = document.getElementById('adminExport'); // Added this
 const adminTbody = document.getElementById('adminTbody');
 const adminEmpty = document.getElementById('adminEmpty');
+
+let currentAdminData = []; // Added this to hold data for the CSV export
 
 function escapeHtml(str){
     return String(str || '').replace(/[&<>"']/g, ch => ({
@@ -241,7 +244,8 @@ async function loadAdminData(forcePrompt = false) {
             return;
         }
 
-        const records = await response.json();
+      const records = await response.json();
+        currentAdminData = records; // Save the data for exporting
         renderAdminTable(records);
     } catch (e) {
         alert("Failed to load registrations. Check network connection.");
@@ -332,6 +336,51 @@ if (adminClose && adminOverlay) {
 }
 if (adminRefresh) {
     adminRefresh.addEventListener('click', () => loadAdminData());
+}
+
+// CSV Export Function
+function downloadCSV() {
+    if (!currentAdminData || currentAdminData.length === 0) {
+        alert("No data available to export.");
+        return;
+    }
+
+    // 1. Create the CSV headers
+    const headers = ["Name", "Age", "Email", "Phone", "City", "Interest Area", "Registration Date"];
+    const csvRows = [headers.join(',')];
+
+    // 2. Loop through the data and format each row
+    for (const row of currentAdminData) {
+        const values = [
+            `"${(row.fullName || '').replace(/"/g, '""')}"`,
+            row.age,
+            `"${(row.email || '').replace(/"/g, '""')}"`,
+            `"${(row.phone || '').replace(/"/g, '""')}"`,
+            `"${(row.city || '').replace(/"/g, '""')}"`,
+            `"${(INTEREST_LABELS[row.interest] || row.interest || '').replace(/"/g, '""')}"`,
+            `"${formatTimestamp(row.registeredAt)}"`
+        ];
+        csvRows.push(values.join(','));
+    }
+
+    // 3. Create a Blob (file) from the CSV string
+    const csvString = csvRows.join('\n');
+    const blob = new Blob([csvString], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    
+    // 4. Create a hidden link and click it to trigger download
+    const a = document.createElement('a');
+    a.setAttribute('hidden', '');
+    a.setAttribute('href', url);
+    a.setAttribute('download', `Roboland_Registrations_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+}
+
+// Attach the function to the Export button
+if (adminExport) {
+    adminExport.addEventListener('click', downloadCSV);
 }
 
 /* ---------------- SWIPER INITIALIZATION ---------------- */
