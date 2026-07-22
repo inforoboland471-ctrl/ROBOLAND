@@ -58,7 +58,7 @@ def send_email_otp(recipient_email, recipient_name, otp_code):
         "Content-Type": "application/json"
     }
     payload = {
-        "from": "Roboland <onboarding@resend.dev>",
+        "from": "Roboland <inforoboland471@gmail.com>",
         "to": [recipient_email],
         "subject": "Your Roboland Verification Code",
         "html": f"<p>Hello <strong>{recipient_name}</strong>,</p><p>Your verification code to access your Roboland Student Portal is:</p><h2>{otp_code}</h2><p>This code is valid for your current login session.</p>"
