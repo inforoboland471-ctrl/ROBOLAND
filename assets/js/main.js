@@ -200,11 +200,11 @@ const adminOverlay = document.getElementById('adminOverlay');
 const adminOpenLink = document.getElementById('adminOpenLink');
 const adminClose = document.getElementById('adminClose');
 const adminRefresh = document.getElementById('adminRefresh');
-const adminExport = document.getElementById('adminExport'); // Added this
+const adminExport = document.getElementById('adminExport');
 const adminTbody = document.getElementById('adminTbody');
 const adminEmpty = document.getElementById('adminEmpty');
 
-let currentAdminData = []; // Added this to hold data for the CSV export
+let currentAdminData = []; 
 
 function escapeHtml(str){
     return String(str || '').replace(/[&<>"']/g, ch => ({
@@ -244,7 +244,7 @@ async function loadAdminData(forcePrompt = false) {
             return;
         }
 
-      const records = await response.json();
+        const records = await response.json();
         currentAdminData = records; // Save the data for exporting
         renderAdminTable(records);
     } catch (e) {
@@ -528,14 +528,30 @@ async function handleMemberLogin() {
 function showCourseDashboard(name) {
     if (userGreeting) userGreeting.textContent = `Welcome back, ${name.split(' ')[0]}!`;
     if (courseDashboard) {
+        // Show the dashboard
         courseDashboard.style.display = 'block';
-        courseDashboard.scrollIntoView({ behavior: 'smooth' });
+        
+        // Hide the main hero section
+        const heroSection = document.querySelector('.hero');
+        if (heroSection) heroSection.style.display = 'none';
+
+        // Scroll to the very top of the page
+        window.scrollTo({ top: 0, behavior: 'smooth' });
     }
 }
 
 function handleLogout() {
+    // Clear the session
     sessionStorage.removeItem('roboland_user');
+    
+    // Hide the dashboard
     if (courseDashboard) courseDashboard.style.display = 'none';
+    
+    // Bring the hero section back
+    const heroSection = document.querySelector('.hero');
+    if (heroSection) heroSection.style.display = 'block';
+    
+    // Scroll back to the top
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
