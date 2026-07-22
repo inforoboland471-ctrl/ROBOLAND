@@ -28,16 +28,19 @@ async function saveRegistration(record) {
 
 async function fetchAllRegistrations() {
   const password = prompt("Enter Admin Password:");
-  if (!password) return [];
+  if (password === null || password.trim() === "") {
+    return null; // Returns null if user clicks Cancel or leaves it empty
+  }
   try {
     const response = await fetch('https://roboland-5xzc.onrender.com/registrations', {
       headers: { 'Authorization': password }
     });
-    if (response.status === 401) { alert("Unauthorized access."); return []; }
+    if (response.status === 401) { alert("Unauthorized access."); return null; }
+    if (!response.ok) throw new Error('Network response was not ok');
     return await response.json();
   } catch (e) {
     console.error('Fetch registrations failed:', e);
-    return [];
+    return null;
   }
 }
 
@@ -236,10 +239,50 @@ async function deleteRegistration(id) {
 }
 
 if (adminOpenLink) {
-    adminOpenLink.addEventListener('click', (e) => { 
+    adminOpenLink.addEventListener('click', async (e) => { 
         e.preventDefault(); 
-        if(adminOverlay) adminOverlay.classList.add('open'); 
-        loadAdminData(); 
+        
+        // Load data first, which triggers the password prompt
+        const records = await fetchAllRegistrations();
+        
+        // If records is null (user clicked Cancel or entered wrong password), stop here!
+        if (records === null) return; 
+
+        // Otherwise, open the overlay and render the fetched records directly
+        if(adminOverlay) adminOverlay.classList.add('open');
+        
+        // Populate the admin dashboard with the records we just fetched
+        if(adminTotal) adminTotal.textContent = records.length;
+        const cities = new Set(records.map(r => (r.city || '').trim().toLowerCase()).filter(Boolean));
+        if(adminCities) adminCities.textContent = cities.size;
+
+        const counts = {};
+        records.forEach(r => { if(r.interest) counts[r.interest] = (counts[r.interest]||0)+1; });
+        let topKey = null, topVal = 0;
+        Object.keys(counts).forEach(k => { if(counts[k] > topVal){ topVal = counts[k]; topKey = k; } });
+        if(adminTopInterest) adminTopInterest.textContent = topKey ? (INTEREST_LABELS[topKey] || topKey) : '—';
+
+        if(records.length === 0){
+          if(adminTbody) adminTbody.innerHTML = '';
+          if(adminEmpty) adminEmpty.style.display = 'block';
+          return;
+        }
+        if(adminEmpty) adminEmpty.style.display = 'none';
+
+        if(adminTbody) {
+            adminTbody.innerHTML = records.map(r => `
+              <tr>
+                <td>${escapeHtml(r.fullName || '—')}</td>
+                <td>${escapeHtml(r.age || '—')}</td>
+                <td>${escapeHtml(r.email || '—')}</td>
+                <td>${escapeHtml(r.phone || '—')}</td>
+                <td>${escapeHtml(r.city || '—')}</td>
+                <td>${escapeHtml(INTEREST_LABELS[r.interest] || r.interest || '—')}</td>
+                <td>${escapeHtml(formatTimestamp(r.registeredAt))}</td>
+                <td><button class="admin-btn" style="padding: 4px 8px;" onclick="deleteRegistration(${r.id})">Delete</button></td>
+              </tr>
+            `).join('');
+        }
     });
 }
 if (adminClose && adminOverlay) {
