@@ -1,12 +1,15 @@
 import os
+import random
+import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from datetime import datetime, timezone
 
-
 app = Flask(__name__)
-# Enable CORS so your GitHub Pages site can talk to this backend
+# Enable CORS so your website can talk to this backend
 CORS(app) 
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'a-very-random-secret-key-you-should-change')
 
@@ -15,6 +18,9 @@ app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'a-very-random-secret-ke
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///registrations.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+
+# Temporary memory storage for OTP codes: { "email@example.com": "123456" }
+otp_storage = {}
 
 # Database Model
 class Registration(db.Model):
@@ -35,6 +41,35 @@ with app.app_context():
 def is_authorized(auth_header):
     SECRET = os.environ.get("ADMIN_PASSWORD", "RoboLand@2026#")
     return auth_header == SECRET
+
+# Helper function to send email via SMTP (Gmail)
+def send_email_otp(recipient_email, recipient_name, otp_code):
+    sender_email = os.environ.get("MAIL_USERNAME")  # Your email address
+    sender_password = os.environ.get("MAIL_PASSWORD")  # Your Gmail App Password
+    
+    if not sender_email or not sender_password:
+        print("SMTP Error: MAIL_USERNAME or MAIL_PASSWORD not set in environment variables.")
+        return False
+
+    try:
+        msg = MIMEMultipart()
+        msg['From'] = sender_email
+        msg['To'] = recipient_email
+        msg['Subject'] = "Your Roboland Verification Code"
+
+        body = f"Hello {recipient_name},\n\nYour verification code to access your Roboland Student Portal is: {otp_code}\n\nThis code is valid for your current login session."
+        msg.attach(MIMEText(body, 'plain'))
+
+        # Connect to Gmail SMTP server
+        server = smtplib.SMTP('smtp.gmail.com', 587)
+        server.starttls()
+        server.login(sender_email, sender_password)
+        server.sendmail(sender_email, recipient_email, msg.as_string())
+        server.quit()
+        return True
+    except Exception as e:
+        print(f"Email sending failed: {e}")
+        return False
 
 # API Endpoint to receive form data
 @app.route('/registrations', methods=['POST'])
@@ -90,26 +125,50 @@ def get_count():
     count = Registration.query.count()
     return jsonify({"count": count})
 
-# API Endpoint for User Login / Course Access
-@app.route('/login', methods=['POST'])
-def login():
+# ---------------- OTP & LOGIN ENDPOINTS ---------------- #
+
+# 1. Request OTP Code Endpoint
+@app.route('/request-otp', methods=['POST'])
+def request_otp():
     data = request.json
     email = data.get('email', '').strip().lower()
     
     # Search for user by email (case-insensitive search)
     user = Registration.query.filter(db.func.lower(Registration.email) == email).first()
     
-    if user:
+    if not user:
+        return jsonify({"success": False, "message": "Email not found. Please register first."}), 404
+    
+    # Generate 6-digit OTP code
+    code = str(random.randint(100000, 999999))
+    otp_storage[email] = code
+    
+    # Send email
+    sent = send_email_otp(email, user.full_name, code)
+    if sent:
+        return jsonify({"success": True, "message": "Verification code sent to email!"}), 200
+    else:
+        return jsonify({"success": False, "message": "Failed to send email. Check SMTP settings."}), 500
+
+# 2. Verify OTP Code Endpoint
+@app.route('/verify-login', methods=['POST'])
+def verify_login():
+    data = request.json
+    email = data.get('email', '').strip().lower()
+    code = data.get('code', '').strip()
+    
+    if email in otp_storage and otp_storage[email] == code:
+        # Clear code after successful use
+        del otp_storage[email]
+        
+        user = Registration.query.filter(db.func.lower(Registration.email) == email).first()
         return jsonify({
             "success": True,
             "fullName": user.full_name,
             "message": "Login successful!"
         }), 200
     else:
-        return jsonify({
-            "success": False,
-            "message": "Email not found. Please register first."
-        }), 404
+        return jsonify({"success": False, "message": "Invalid or expired verification code."}), 400
 
 if __name__ == '__main__':
     # Use port 5000 for local, Render will override this automatically
