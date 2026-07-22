@@ -544,27 +544,43 @@
     </div>
   </div>
 
-  <!--==================== LOGIN MODAL ====================-->
-  <div class="admin-overlay" id="loginOverlay">
-    <div class="admin-panel" style="max-width: 420px; text-align: center;">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-        <h3 style="margin: 0;">Member Portal Login</h3>
-        <button class="admin-btn close-btn" id="loginClose">Close</button>
-      </div>
-      <p style="font-size: 0.9rem; color: #5b6070; margin-bottom: 20px;">Enter your registered email to unlock your course access.</p>
-      
-      <div id="loginFormWrap">
-        <div class="field" style="text-align: left;">
-          <label for="loginEmail">Registered Email <span class="req">*</span></label>
-          <input type="email" id="loginEmail" placeholder="you@example.com" style="width: 100%; padding: 12px; border-radius: 8px; border: 1.5px solid #D9D3C3;">
-        </div>
-        <div class="error-msg" id="err-login" style="margin-bottom: 15px;"></div>
-        <button class="submit-btn" id="loginSubmitBtn" onclick="handleMemberLogin()">
-          <span class="btn-label">Access Courses</span>
-        </button>
-      </div>
+<!--==================== LOGIN MODAL ====================-->
+<div class="admin-overlay" id="loginOverlay">
+  <div class="admin-panel" style="max-width: 420px; text-align: center;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+      <h3 style="margin: 0;">Student Portal Login</h3>
+      <button class="admin-btn close-btn" id="loginClose">Close</button>
     </div>
+    
+    <!-- STEP 1: Enter Email -->
+    <div id="stepEmailWrap">
+      <p style="font-size: 0.9rem; color: #5b6070; margin-bottom: 20px;">Enter your registered email to receive a verification code.</p>
+      <div class="field" style="text-align: left;">
+        <label for="loginEmail">Registered Email <span class="req">*</span></label>
+        <input type="email" id="loginEmail" placeholder="you@example.com" style="width: 100%; padding: 12px; border-radius: 8px; border: 1.5px solid #D9D3C3;">
+      </div>
+      <div class="error-msg" id="err-login" style="margin-bottom: 15px;"></div>
+      <button class="submit-btn" id="sendOtpBtn" onclick="handleSendOtp()">
+        <span class="btn-label">Send Verification Code</span>
+      </button>
+    </div>
+
+    <!-- STEP 2: Enter OTP Code (Hidden initially) -->
+    <div id="stepCodeWrap" style="display: none;">
+      <p style="font-size: 0.9rem; color: #5b6070; margin-bottom: 20px;">We've sent a 6-digit code to your email. Enter it below:</p>
+      <div class="field" style="text-align: left;">
+        <label for="loginCode">6-Digit Code <span class="req">*</span></label>
+        <input type="text" id="loginCode" placeholder="123456" maxlength="6" style="width: 100%; padding: 12px; border-radius: 8px; border: 1.5px solid #D9D3C3; text-align: center; font-size: 1.2rem; letter-spacing: 4px;">
+      </div>
+      <div class="error-msg" id="err-code" style="margin-bottom: 15px;"></div>
+      <button class="submit-btn" onclick="handleVerifyOtp()">
+        <span class="btn-label">Verify & Log In</span>
+      </button>
+      <button class="admin-btn" style="width: 100%; margin-top: 10px;" onclick="resetLoginStep()">Back to Email</button>
+    </div>
+
   </div>
+</div>
 
   <!--==================== COURSE ACCESS DASHBOARD ====================-->
   <section id="courseDashboard" style="display: none; background: var(--paper-dim); padding: 80px 24px; min-height: 80vh;">
